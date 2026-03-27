@@ -1,0 +1,19 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ktdsuniversity.edu.members.dao.MembersDao">
+
+    <insert id="insertNewMember"
+            parameterType="com.ktdsuniversity.edu.members.vo.request.RegistVO">
+        INSERT INTO MEMBERS
+         (EMAIL
+        , NAME
+        , PASSWORD)
+        VALUES
+         (#{email}
+        , #{name}
+        , #{password})
+    </insert>
+
+</mapper>

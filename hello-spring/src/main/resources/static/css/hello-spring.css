@@ -1,0 +1,50 @@
+@charset "UTF-8";
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: #333;
+}
+
+/* grid style 시작 */
+div.grid {
+  display: grid;
+  align-items: center;
+}
+
+div.grid > div.btn-group {
+  grid-column: 1 / -1;
+}
+
+div.grid > div.btn-group > div.right-align {
+  text-align: right;
+}
+
+div.grid > label {
+  padding-left: 0.625rem;
+}
+
+div.grid input,
+div.grid button,
+div.grid textarea {
+  padding: 0.625rem;
+}
+/* grid style 끝 */
+
+/* 글쓰기 style 시작 */
+div.write {
+  grid-template-columns: 5rem 1fr;
+  grid-template-rows: 1.75rem 1.75rem 20rem 1fr;
+  row-gap: 0.625rem;
+}
+/* 글쓰기 style 끝 */
+
+/* 회원가입 style 시작 */
+div.regist {
+  grid-template-columns: 7.5rem 1fr;
+  grid-template-rows: repeat(4, minmax(1.75rem, auto)) 1fr;
+  row-gap: 0.625rem;
+}
