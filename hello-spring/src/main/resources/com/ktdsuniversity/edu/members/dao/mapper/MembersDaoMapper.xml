@@ -41,5 +41,18 @@
           FROM MEMBERS
          WHERE EMAIL = #{_parameter}
     </delete>
+    
+    <select id="selectMembersCount" resultType="_int">
+        SELECT COUNT(EMAIL)
+          FROM MEMBERS
+    </select>
+
+    <select id="selectMembersList" resultType="com.ktdsuniversity.edu.members.vo.MembersVO">
+        SELECT EMAIL
+             , NAME
+             , PASSWORD
+          FROM MEMBERS
+         ORDER BY EMAIL ASC
+    </select>
 
 </mapper>

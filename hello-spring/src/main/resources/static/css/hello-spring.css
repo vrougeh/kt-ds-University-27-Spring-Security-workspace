@@ -1,5 +1,4 @@
 @charset "UTF-8";
-
 * {
   box-sizing: border-box;
 }
@@ -9,16 +8,73 @@ body {
   color: #333;
 }
 
+/* link style 시작 */
+a {
+  color: #555;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #ff2d2d;
+  text-decoration: underline;
+}
+/* link style 끝 */
+
 pre {
   margin: 0;
   font-size: 1rem;
 }
 
+/* ul grid 시작 */
+ul.grid {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  border: 1px solid #ddd;
+}
+
+ul.grid > li.header > ul.header-item,
+ul.grid > li.body > ul.body-item,
+ul.grid > li.footer > ul.footer-item {
+  display: grid;
+  margin: 0;
+  padding: 0.625rem;
+  list-style-type: none;
+}
+ul.grid > li.header > ul.header-item {
+  text-align: center;
+  font-weight: 700;
+}
+ul.grid > li.footer {
+  background-color: #f5f5f5;
+}
+ul.grid > li.body > ul.body-item:nth-child(odd) {
+  background-color: #f5f5f5;
+}
+ul.grid > li.body > ul.body-item:hover {
+  background-color: #fafafa;
+}
+
+ul.grid > li.body > ul.body-item > li,
+ul.grid > li.header > ul.header-item > li {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  min-width: 2rem;
+  padding: 0 0.625rem;
+}
+
+ul.grid li.center {
+  text-align: center;
+}
+/* ul grid 끝 */
+
 /* table grid 시작 */
 table.grid {
   border-collapse: collapse;
   width: 100%;
-  max-width: 1000px;
   border: 1px solid #ddd;
 }
 
@@ -46,6 +102,13 @@ table.grid > tbody > tr > td {
   text-overflow: ellipsis;
   overflow: hidden;
 }
+
+table.grid > tbody > tr > td > a {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 /* table grid 끝 */
 
 /* grid style 시작 */
@@ -85,15 +148,10 @@ div.grid textarea {
 /* grid style 끝 */
 
 /* 글 목록 style 시작 */
-div.list {
-  grid-template-columns: 1fr;
-  grid-template-rows: 5rem 2rem 1fr 0.625rem;
+ul.articles > li.body > ul.body-item,
+ul.articles > li.header > ul.header-item {
+  grid-template-columns: 11.5rem 1fr minmax(10rem, auto) 4.5rem 11rem 11rem;
 }
-
-div.list > table.grid > tbody > tr > td:nth-child(2) {
-  max-width: calc(100vw - 709px);
-}
-
 /* 글 목록 style 끝 */
 
 /* 글쓰기 style 시작 */
@@ -109,6 +167,14 @@ div.write {
   row-gap: 0.625rem;
 }
 /* 글쓰기 style 끝 */
+
+/* 게시글 내용 조회 style 시작 */
+div.view {
+  grid-template-columns: 7.5rem 1fr;
+  grid-template-rows: repeat(9, minmax(1.75rem, auto));
+  row-gap: 0.625rem;
+}
+/* 게시글 내용 조회 style 끝 */
 
 /* 회원가입 style 시작 */
 div.regist {
@@ -132,10 +198,10 @@ div.member-view {
 }
 /* 회원가입 style 끝 */
 
-/* 게시글 내용 조회 style 시작 */
-div.view {
-  grid-template-columns: 7.5rem 1fr;
-  grid-template-rows: repeat(9, minmax(1.75rem, auto));
-  row-gap: 0.625rem;
+/* 회원 목록 style 시작 */
+
+ul.member-list > li.body > ul.body-item,
+ul.member-list > li.header > ul.header-item {
+  grid-template-columns: repeat(3, 1fr);
 }
-/* 게시글 내용 조회 style 끝 */
+/* 회원 목록 style 끝 */

@@ -39,18 +39,29 @@ pageEncoding="UTF-8"%>
           </tr>
         </thead>
         <tbody>
-          <c:forEach items="${searchResult}" var="board">
-            <tr>
-              <td>${board.id}</td>
-              <td>
-                <a href="/view/${board.id}">${board.subject}</a>
-              </td>
-              <td>${board.email}</td>
-              <td>${board.viewCnt}</td>
-              <td>${board.crtDt}</td>
-              <td>${board.mdfyDt}</td>
-            </tr>
-          </c:forEach>
+          <c:choose>
+            <c:when test="${not empty searchResult}">
+              <!-- searchResult가 존재하면, 반복하여 데이터를 보여주고 -->
+	          <c:forEach items="${searchResult}" var="board">
+	            <tr>
+	              <td>${board.id}</td>
+	              <td>
+	                <a href="/view/${board.id}">${board.subject}</a>
+	              </td>
+	              <td>${board.email}</td>
+	              <td>${board.viewCnt}</td>
+	              <td>${board.crtDt}</td>
+	              <td>${board.mdfyDt}</td>
+	            </tr>
+	          </c:forEach>
+            </c:when>
+            <c:otherwise>
+              <!-- searchResult가 존재하지 않으면, "검색된 데이터가 없습니다"를 보여주고 -->
+              <tr>
+                <td colspan="6">검색된 데이터가 없습니다.</td>
+              </tr>
+            </c:otherwise>
+          </c:choose>
         </tbody>
       </table>
       <div class="btn-group">

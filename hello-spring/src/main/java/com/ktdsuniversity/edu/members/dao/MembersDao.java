@@ -1,5 +1,7 @@
 package com.ktdsuniversity.edu.members.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.ktdsuniversity.edu.members.vo.MembersVO;
@@ -16,5 +18,9 @@ public interface MembersDao {
 	int updateMemberByEmail(UpdateVO updateVO);
 
 	int deleteMemberByEmail(String email);
+
+	int selectMembersCount();
+
+	List<MembersVO> selectMembersList();
 
 }

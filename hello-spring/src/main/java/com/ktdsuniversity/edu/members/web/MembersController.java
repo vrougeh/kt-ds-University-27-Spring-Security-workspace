@@ -12,6 +12,7 @@ import com.ktdsuniversity.edu.members.service.MembersService;
 import com.ktdsuniversity.edu.members.vo.MembersVO;
 import com.ktdsuniversity.edu.members.vo.request.RegistVO;
 import com.ktdsuniversity.edu.members.vo.request.UpdateVO;
+import com.ktdsuniversity.edu.members.vo.response.SearchResultVO;
 
 @Controller
 public class MembersController {
@@ -69,4 +70,23 @@ public class MembersController {
 		return "redirect:/member";
 	}
 	
+	// /member ==> 회원들의 목록이 조회되도록 코드를 작성.
+	//     ==> 회원 목록 조회.
+	//     ==> members/list.jsp : 회원 목록 반복.
+	//                          : 회원의 수 출력
+	//                          : 회원의 수가 없을 때, "등록된 회원이 없습니다" 출력
+	//                          : 목록 아래에는 "새로운 회원 등록" 링크 추가.
+	@GetMapping("/member")
+	public String viewMembersPage(Model model) {
+		SearchResultVO searchResult = this.membersService.findMembersList();
+		model.addAttribute("searchList", searchResult.getResult());
+		model.addAttribute("searchCount", searchResult.getCount());
+		return "members/newlist";
+	}
 }
+
+
+
+
+
+

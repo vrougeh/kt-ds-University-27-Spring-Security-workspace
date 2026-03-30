@@ -40,7 +40,7 @@ public class BoardController {
 		model.addAttribute("searchResult", list);
 		model.addAttribute("searchCount", searchCount);
 		
-		return "board/list";
+		return "board/newlist";
 	}
 	
 	// 게시글 등록 화면 보여주는 EndPoint
