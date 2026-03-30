@@ -18,6 +18,7 @@ pre {
 table.grid {
   border-collapse: collapse;
   width: 100%;
+  max-width: 1000px;
   border: 1px solid #ddd;
 }
 
@@ -42,6 +43,8 @@ table.grid > tbody > tr > td {
   border-right: none;
   padding: 0.625rem;
   white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 /* table grid 끝 */
 
@@ -80,6 +83,18 @@ div.grid textarea {
   padding: 0.625rem;
 }
 /* grid style 끝 */
+
+/* 글 목록 style 시작 */
+div.list {
+  grid-template-columns: 1fr;
+  grid-template-rows: 5rem 2rem 1fr 0.625rem;
+}
+
+div.list > table.grid > tbody > tr > td:nth-child(2) {
+  max-width: calc(100vw - 709px);
+}
+
+/* 글 목록 style 끝 */
 
 /* 글쓰기 style 시작 */
 div.update {
