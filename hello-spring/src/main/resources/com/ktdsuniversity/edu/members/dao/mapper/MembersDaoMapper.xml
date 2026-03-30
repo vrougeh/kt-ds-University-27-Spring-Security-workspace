@@ -15,5 +15,31 @@
         , #{name}
         , #{password})
     </insert>
+    
+    <select id="selectMemberByEmail"
+            parameterType="string"
+            resultType="com.ktdsuniversity.edu.members.vo.MembersVO">
+        SELECT EMAIL
+             , NAME
+             , PASSWORD
+          FROM MEMBERS
+         WHERE EMAIL = #{_parameter}
+    </select>
+    
+    <update id="updateMemberByEmail"
+            parameterType="com.ktdsuniversity.edu.members.vo.request.UpdateVO">
+        UPDATE MEMBERS
+           SET EMAIL = #{email}
+             , NAME = #{name}
+             , PASSWORD = #{password}
+         WHERE EMAIL = #{email}
+    </update>
+    
+    <delete id="deleteMemberByEmail"
+            parameterType="string">
+        DELETE
+          FROM MEMBERS
+         WHERE EMAIL = #{_parameter}
+    </delete>
 
 </mapper>

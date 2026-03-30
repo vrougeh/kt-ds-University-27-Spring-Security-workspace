@@ -2,11 +2,19 @@ package com.ktdsuniversity.edu.members.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.ktdsuniversity.edu.members.vo.MembersVO;
 import com.ktdsuniversity.edu.members.vo.request.RegistVO;
+import com.ktdsuniversity.edu.members.vo.request.UpdateVO;
 
 @Mapper
 public interface MembersDao {
 
 	int insertNewMember(RegistVO registVO);
+
+	MembersVO selectMemberByEmail(String email);
+
+	int updateMemberByEmail(UpdateVO updateVO);
+
+	int deleteMemberByEmail(String email);
 
 }
