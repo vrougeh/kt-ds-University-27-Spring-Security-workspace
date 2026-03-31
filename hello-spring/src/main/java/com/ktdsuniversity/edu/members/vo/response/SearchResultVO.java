@@ -2,7 +2,6 @@ package com.ktdsuniversity.edu.members.vo.response;
 
 import java.util.List;
 
-import com.ktdsuniversity.edu.board.vo.BoardVO;
 import com.ktdsuniversity.edu.members.vo.MembersVO;
 
 /**
