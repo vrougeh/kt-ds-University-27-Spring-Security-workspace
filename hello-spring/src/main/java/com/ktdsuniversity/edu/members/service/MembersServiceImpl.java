@@ -19,6 +19,12 @@ public class MembersServiceImpl implements MembersService {
 	
 	@Override
 	public boolean createNewMember(RegistVO registVO) {
+		
+		MembersVO membersVO = this.membersDao.selectMemberByEmail(registVO.getEmail());
+		if (membersVO != null) {
+			throw new IllegalArgumentException(registVO.getEmail() + "은 이미 사용중입니다.");
+		}
+		
 		int insertCount = this.membersDao.insertNewMember(registVO);
 		return insertCount == 1;
 	}
