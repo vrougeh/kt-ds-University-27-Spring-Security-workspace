@@ -147,7 +147,13 @@ public class MembersController {
 				this.membersService
 				    .findMemberByEmailAndPassword(loginVO);
 		
-		HttpSession session = request.getSession();
+		// 서버의 세션을 삭제한다.
+		// 로그아웃.
+		request.getSession().invalidate();
+		
+		// request.getSession(); <== HttpRequestHeader로 전달된 JSESSIONID의 객체를 반환.
+		// request.getSession(true); <== 기존 JESSIONID로 발급된 세션객체는 버리고, 새로운 ID의 세션객체를 생성 후 반환.
+		HttpSession session = request.getSession(true);
 		session.setAttribute("__LOGIN_DATA__", member);
 		
 		return "redirect:/";

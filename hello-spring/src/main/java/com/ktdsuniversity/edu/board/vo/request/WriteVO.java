@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 
 /**
@@ -19,8 +18,6 @@ public class WriteVO {
 	@NotEmpty(message = "제목은 반드시 입력해주세요.")
 	private String subject;
 
-	@NotEmpty(message = "이메일 형태가 아닙니다.")
-	@Email(message = "이메일 형태가 아닙니다.")
 	private String email;
 
 	private String content;

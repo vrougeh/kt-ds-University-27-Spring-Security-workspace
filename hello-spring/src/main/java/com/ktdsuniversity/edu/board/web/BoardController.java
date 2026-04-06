@@ -18,7 +18,10 @@ import com.ktdsuniversity.edu.board.vo.BoardVO;
 import com.ktdsuniversity.edu.board.vo.request.UpdateVO;
 import com.ktdsuniversity.edu.board.vo.request.WriteVO;
 import com.ktdsuniversity.edu.board.vo.response.SearchResultVO;
+import com.ktdsuniversity.edu.members.vo.MembersVO;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -59,7 +62,8 @@ public class BoardController {
 								// @Valid의 결과를 받아오는 파라미터.
 								// 반드시 @Valid 파라미터 이후에 작성!
 							    BindingResult bindingResult,
-							    Model model) {
+							    Model model,
+							    HttpServletRequest request) {
 		// 사용자의 입력값을 검증 했을 때, 에러가 있다면
 		if (bindingResult.hasErrors()) {
 			// 브라우저에게 "board/write" 페이지를 보여주도록 하고
@@ -67,6 +71,11 @@ public class BoardController {
 			model.addAttribute("inputData", writeVO);
 			return "board/write";
 		}
+		
+		// 로그인 데이터(__LOGIN_DATA__)에서 로그인 한 사용자의 이메일을 가져온다.
+		HttpSession session = request.getSession();
+		MembersVO loginMember = (MembersVO) session.getAttribute("__LOGIN_DATA__");
+		writeVO.setEmail(loginMember.getEmail());
 		
 		
 		System.out.println(writeVO.getSubject());
