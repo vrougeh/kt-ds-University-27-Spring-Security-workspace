@@ -42,7 +42,8 @@
         , CRT_DT
         , MDFY_DT
         , FILE_NAME
-        , ORIGIN_FILE_NAME) 
+        , ORIGIN_FILE_NAME
+        , FILE_GROUP_ID) 
         VALUES
          (#{id}
         , #{subject}
@@ -52,7 +53,8 @@
         , SYSDATE
         , SYSDATE
         , NULL
-        , NULL)
+        , NULL
+        , #{fileGroupId})
     </insert>
     
     <!-- JOIN을 사용하는 쿼리의 결과를
@@ -95,24 +97,33 @@
             resultMap="BoardVOMap"
             parameterType="string">
         SELECT B.ID
-		     , B.SUBJECT
-		     , B.CONTENT
-		     , B.EMAIL
-		     , B.VIEW_CNT
-		     , TO_CHAR(B.CRT_DT, 'YYYY-MM-DD HH24:MI:SS') AS CRT_DT
-		     , TO_CHAR(B.MDFY_DT, 'YYYY-MM-DD HH24:MI:SS') AS MDFY_DT
-		     , B.FILE_NAME
-		     , B.ORIGIN_FILE_NAME
-		     , F.FILE_NUM
-		     , F.FILE_GROUP_ID
-		     , F.OBFUSCATE_NAME
-		     , F.DISPLAY_NAME
-		     , F.EXTEND_NAME
-		     , F.FILE_LENGTH
-		     , F.FILE_PATH
-		  FROM BOARD B
-		  LEFT OUTER JOIN FILES F
-		    ON B.ID = F.FILE_GROUP_ID
+             , B.SUBJECT
+             , B.CONTENT
+             , B.EMAIL
+             , B.VIEW_CNT
+             , TO_CHAR(B.CRT_DT, 'YYYY-MM-DD HH24:MI:SS') AS CRT_DT
+             , TO_CHAR(B.MDFY_DT, 'YYYY-MM-DD HH24:MI:SS') AS MDFY_DT
+             , B.FILE_NAME
+             , B.ORIGIN_FILE_NAME
+             , F.FILE_NUM
+             , F.FILE_GROUP_ID
+             , F.OBFUSCATE_NAME
+             , F.DISPLAY_NAME
+             , F.EXTEND_NAME
+             , F.FILE_LENGTH
+             , F.FILE_PATH
+          FROM BOARD B
+          LEFT OUTER JOIN (SELECT F.FILE_NUM
+                                , FG.FILE_GROUP_ID
+                                , F.OBFUSCATE_NAME
+                                , F.DISPLAY_NAME
+                                , F.EXTEND_NAME
+                                , F.FILE_LENGTH
+                                , F.FILE_PATH
+                             FROM FILES_GROUP FG
+                            INNER JOIN FILES F
+                               ON FG.FILE_GROUP_ID = F.FILE_GROUP_ID) F
+            ON B.FILE_GROUP_ID = F.FILE_GROUP_ID
 		 WHERE B.ID = #{_parameter}
     </select>
             
@@ -137,6 +148,7 @@
 		     , EMAIL = #{email}
 		     , CONTENT = #{content}
 		     , MDFY_DT = SYSDATE
+		     , FILE_GROUP_ID = #{fileGroupId}
 		 WHERE ID = #{id}
     </update>
 </mapper>
