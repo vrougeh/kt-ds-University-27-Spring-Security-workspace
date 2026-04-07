@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.ktdsuniversity.edu.config.interceptors.IllegalAccessInterceptor;
 import com.ktdsuniversity.edu.config.interceptors.SessionInterceptor;
 
 // application.yml에서 작성할 수 없는 설정들을 적용하기 위한 Annotation
@@ -41,6 +42,13 @@ public class HelloSpringConfiguration implements
 						"/file/**" // 첨부파일 다운로드
 						) // sessionInterceptor가 적용되지 않을 URL 명시.
 				;
+		IllegalAccessInterceptor illegalAccessInterceptor = new IllegalAccessInterceptor();
+		registry.addInterceptor(illegalAccessInterceptor)
+				.addPathPatterns(
+						"/regist/check/duplicate/**", // 회원가입 이메일 중복 검사.
+						"/regist", // 회원가입 페이지 & 처리
+						"/login" // 로그인 페이지 & 처리 URL
+						);
 		
 	}
 	
