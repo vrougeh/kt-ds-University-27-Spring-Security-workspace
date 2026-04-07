@@ -20,7 +20,6 @@ import com.ktdsuniversity.edu.board.vo.request.WriteVO;
 import com.ktdsuniversity.edu.board.vo.response.SearchResultVO;
 import com.ktdsuniversity.edu.members.vo.MembersVO;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -52,8 +51,7 @@ public class BoardController {
 	
 	// 게시글 등록 화면 보여주는 EndPoint
 	@GetMapping("/write")
-	public String viewWritePage(HttpServletRequest request) {
-		HttpSession session = request.getSession();
+	public String viewWritePage(HttpSession session) {
 		MembersVO loginMember = (MembersVO) session.getAttribute("__LOGIN_DATA__");
 		
 		if(loginMember == null) {
@@ -72,9 +70,8 @@ public class BoardController {
 								// 반드시 @Valid 파라미터 이후에 작성!
 							    BindingResult bindingResult,
 							    Model model,
-							    HttpServletRequest request) {
+							    HttpSession session) {
 		
-		HttpSession session = request.getSession();
 		if (session.getAttribute("__LOGIN_DATA__") == null) {
 			return "redirect:/login";
 		}
@@ -87,7 +84,6 @@ public class BoardController {
 		}
 		
 		// 로그인 데이터(__LOGIN_DATA__)에서 로그인 한 사용자의 이메일을 가져온다.
-//		HttpSession session = request.getSession();
 		MembersVO loginMember = (MembersVO) session.getAttribute("__LOGIN_DATA__");
 		writeVO.setEmail(loginMember.getEmail());
 		
@@ -135,11 +131,10 @@ public class BoardController {
 	
 	@GetMapping("/update/{articleId}")
 	public String viewUpdatePage(@PathVariable String articleId, Model model
-								, HttpServletRequest request)  {
+								, HttpSession session)  {
 		BoardVO data = this.boardService.findBoardByArticleId(articleId, ReadType.UPDATE);
 		model.addAttribute("article", data);
 		
-		HttpSession session = request.getSession();
 		MembersVO loginMember = (MembersVO) session.getAttribute("__LOGIN_DATA__");
 
 		if(!loginMember.getEmail().equals(data.getEmail())) {
@@ -152,9 +147,9 @@ public class BoardController {
 	@PostMapping("/update/{articleId}")
 	public String doUpdateAction(@PathVariable String articleId,
 			UpdateVO updateVO,
-			HttpServletRequest request) {
+			HttpSession session) {
+		
 		updateVO.setId(articleId);
-		HttpSession session = request.getSession();
 		
 		MembersVO loginMember = (MembersVO) session.getAttribute("__LOGIN_DATA__");
 		updateVO.setEmail(loginMember.getEmail());
