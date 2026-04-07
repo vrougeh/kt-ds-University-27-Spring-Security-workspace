@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.ktdsuniversity.edu.members.service.MembersService;
 import com.ktdsuniversity.edu.members.vo.MembersVO;
@@ -124,12 +125,10 @@ public class MembersController {
 	}
 	
 	@GetMapping("/login")
-	public String viewLoginPage(HttpSession session) {
-		
-		MembersVO loginMember = (MembersVO) session.getAttribute("__LOGIN_DATA__");
+	public String viewLoginPage(
+			@SessionAttribute(name = "__LOGIN_DATA__", required = false) MembersVO loginMember) {
 		
 		if(loginMember !=null) {
-			
 			return "redirect:/";
 		}
 		
