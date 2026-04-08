@@ -2,6 +2,20 @@
 회원페이지와 관련된 스크립트 작성.
  */
 $().ready(function () {
+  
+  // 현재 Location의 pathname을 가지고 온다.
+  var pathname = location.pathname;
+  // pathname이 "/login"이 아니라면 action을 "/login?go={pathname}" 으로 수정한다.
+  if (pathname !== "/login") {
+    pathname = "?go=" + pathname;
+  }
+  else {
+    pathname = "";
+  }
+  
+  $("#loginVO")
+      .attr({action: "/login" + pathname});
+    
   // 이메일 포커스가 해제되면, 0.15초 이후에 이메일 재검사.
   $("#email").on("blur", function () {
     setTimeout(function () {

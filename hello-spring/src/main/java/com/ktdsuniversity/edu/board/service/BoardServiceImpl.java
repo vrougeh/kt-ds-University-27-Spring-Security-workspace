@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ktdsuniversity.edu.board.dao.BoardDao;
@@ -55,6 +56,7 @@ public class BoardServiceImpl implements BoardService {
 		return result;
 	}
 
+	@Transactional
 	@Override
 	public boolean createNewBoard(WriteVO writeVO) {
 		
@@ -77,6 +79,7 @@ public class BoardServiceImpl implements BoardService {
 		return insertCount == 1;
 	}
 
+	@Transactional
 	@Override
 	public BoardVO findBoardByArticleId(String articleId, ReadType readType) {
 		if (readType == ReadType.VIEW) { 
@@ -97,6 +100,7 @@ public class BoardServiceImpl implements BoardService {
 		return board;
 	}
 
+	@Transactional
 	@Override
 	public boolean deleteBoardByArticleId(String id) {
 		int deleteCount = this.boardDao.deleteBoardById(id);
@@ -118,10 +122,9 @@ public class BoardServiceImpl implements BoardService {
 		return deleteCount == 1;
  	}
 
+	@Transactional
 	@Override
 	public boolean updateBoardByArticleId(UpdateVO updateVO) {
-		
-		
 		// 선택한 파일들만 삭제.
 		if ( updateVO.getDeleteFileNum() != null && 
 				updateVO.getDeleteFileNum().size() > 0) {

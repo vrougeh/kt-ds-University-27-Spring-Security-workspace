@@ -23,7 +23,7 @@
          debug > info > warn > error -->
     <!--  모든 로그를 info 이하 수준만 출력한다.
          info > warn > error -->
-	<root level="info">
+	<root level="debug">
 		<appender-ref ref="ConsoleOutput" />
 		<appender-ref ref="FILE" />
 	</root>

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ktdsuniversity.edu.exceptions.HelloSpringException;
 import com.ktdsuniversity.edu.members.dao.MembersDao;
@@ -22,6 +23,7 @@ public class MembersServiceImpl implements MembersService {
 	@Autowired
 	private MembersDao membersDao;
 	
+	@Transactional
 	@Override
 	public boolean createNewMember(RegistVO registVO) {
 		
@@ -46,18 +48,21 @@ public class MembersServiceImpl implements MembersService {
 		return insertCount == 1;
 	}
 
+	@Transactional
 	@Override
 	public MembersVO findMemberByEmail(String email) {
 		MembersVO searchResult = this.membersDao.selectMemberByEmail(email);
 		return searchResult;
 	}
 
+	@Transactional
 	@Override
 	public boolean updateMemberByEmail(UpdateVO updateVO) {
 		int updateCount = this.membersDao.updateMemberByEmail(updateVO);
 		return updateCount == 1;
 	}
 
+	@Transactional
 	@Override
 	public boolean deleteMemberByEmail(String email) {
 		int deleteCount = this.membersDao.deleteMemberByEmail(email);
@@ -80,6 +85,7 @@ public class MembersServiceImpl implements MembersService {
 		return result;
 	}
 
+	@Transactional(noRollbackFor = HelloSpringException.class)
 	@Override
 	public MembersVO findMemberByEmailAndPassword(LoginVO loginVO) {
 		

@@ -138,6 +138,7 @@ public class MembersController {
 			@Valid @ModelAttribute LoginVO loginVO,
 			BindingResult bindingResult,
 			Model model,
+			@RequestParam(required = false, defaultValue = "/") String go,
 			HttpServletRequest request) {
 		
 		if (bindingResult.hasErrors()) {
@@ -161,7 +162,7 @@ public class MembersController {
 		HttpSession session = request.getSession(true);
 		session.setAttribute("__LOGIN_DATA__", member);
 		
-		return "redirect:/";
+		return "redirect:" + go;
 	}
 	
 	@GetMapping("/logout")
