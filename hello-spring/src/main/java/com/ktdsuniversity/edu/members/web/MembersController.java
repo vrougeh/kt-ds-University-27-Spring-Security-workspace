@@ -1,5 +1,7 @@
 package com.ktdsuniversity.edu.members.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +34,8 @@ import jakarta.validation.Valid;
 @Controller
 public class MembersController {
 
+	private static final Logger logger = LoggerFactory.getLogger(MembersController.class);
+	
 	@Autowired
 	private MembersService membersService;
 	
@@ -68,7 +72,7 @@ public class MembersController {
 			return "members/regist";
 		}
 		boolean createResult = this.membersService.createNewMember(registVO);
-		System.out.println("회원 가입 결과? " + createResult);
+		logger.debug("회원 가입 결과? {}", createResult);
 		return "redirect:/login";
 	}
 	
@@ -99,14 +103,14 @@ public class MembersController {
 			UpdateVO updateVO) {
 		updateVO.setEmail(email);
 		boolean updateResult = this.membersService.updateMemberByEmail(updateVO);
-		System.out.println("수정 결과? " + updateResult);
+		logger.debug("수정 결과? {}", updateResult);
 		return "redirect:/member/view/" + email;
 	}
 	
 	@GetMapping("/member/delete")
 	public String doDeleteAction(@RequestParam String id) {
 		boolean updateResult = this.membersService.deleteMemberByEmail(id);
-		System.out.println("삭제 결과? " + updateResult);
+		logger.debug("삭제 결과? {}", updateResult);
 		return "redirect:/member";
 	}
 	
@@ -175,7 +179,7 @@ public class MembersController {
 		
 		// 2. MEMBERS 테이블에서 회원의 정보를 이메일을 이용해 삭제한다.
 		boolean deleteSuccess = this.membersService.deleteMemberByEmail(email);
-		System.out.println("탈퇴 성공? " + deleteSuccess);
+		logger.debug("탈퇴 성공? {}", deleteSuccess);
 		
 		// 3. 현재 로그인된 사용자를 로그아웃 시킨다.
 		session.invalidate();

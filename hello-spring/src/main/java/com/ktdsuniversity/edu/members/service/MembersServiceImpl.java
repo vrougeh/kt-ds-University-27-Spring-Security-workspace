@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ktdsuniversity.edu.exceptions.HelloSpringException;
 import com.ktdsuniversity.edu.members.dao.MembersDao;
 import com.ktdsuniversity.edu.members.helpers.SHA256Util;
 import com.ktdsuniversity.edu.members.vo.MembersVO;
@@ -26,7 +27,7 @@ public class MembersServiceImpl implements MembersService {
 		
 		MembersVO membersVO = this.membersDao.selectMemberByEmail(registVO.getEmail());
 		if (membersVO != null) {
-			throw new IllegalArgumentException(registVO.getEmail() + "은 이미 사용중입니다.");
+			throw new HelloSpringException("이미 사용중인 이메일입니다.", "members/regist", registVO);
 		}
 		
 		// 암호화를 위한 비밀키 생성.
@@ -87,7 +88,7 @@ public class MembersServiceImpl implements MembersService {
 		// 2. 조회된 결과가 없다면 "이메일 또는 비밀번호가 잘못되었습니다." 예외 던지기
 		//    IllegalArgumentsException
 		if (searchResult == null) {
-			throw new IllegalArgumentException("이메일 또는 비밀번호가 잘못되었습니다.");
+			throw new HelloSpringException("이메일 또는 비밀번호가 잘못되었습니다.", "members/login", loginVO);
 		}
 		
 		if (searchResult.getBlockYn().equals("Y")) {
@@ -105,7 +106,7 @@ public class MembersServiceImpl implements MembersService {
 			// 아직 두 시간이 경과하지 않은 것.
 			if (lastestBlockDateTime.isAfter(LocalDateTime.now().minusMinutes(120))) {
 				// 예외를 던진다.
-				throw new IllegalArgumentException("이메일 또는 비밀번호가 잘못되었습니다.");
+				throw new HelloSpringException("이메일 또는 비밀번호가 잘못되었습니다.", "members/login", loginVO);
 			}
 		}
 		
@@ -127,7 +128,7 @@ public class MembersServiceImpl implements MembersService {
 			// 최근 로그인 실패 횟수가 5 이상이라면 block-yn을 Y로 변경한다.
 			this.membersDao.updateBlock(loginVO.getEmail());
 			
-			throw new IllegalArgumentException("이메일 또는 비밀번호가 잘못되었습니다.");
+			throw new HelloSpringException("이메일 또는 비밀번호가 잘못되었습니다.", "members/login", loginVO);
 		}
 		
 		// 로그인 성공처리

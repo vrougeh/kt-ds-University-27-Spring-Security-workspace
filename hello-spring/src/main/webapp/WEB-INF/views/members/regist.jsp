@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
   <jsp:include page="/WEB-INF/views/templates/header.jsp">
     <jsp:param value="회원 가입" name="title" />
     <jsp:param value="<script type='text/javascript' src='/js/members.js'></script>" 
@@ -16,8 +17,11 @@
             id="email"
             name="email"
             placeholder="이메일을 입력하세요."
-            value="${inputData.email}"
+            value="${inputData.email}${errorData.email}"
           />
+          <c:if test="${not empty errorMessage}">
+            <div class="validation-error">${errorMessage}</div>
+          </c:if>
           <form:errors path="email" cssClass="validation-error" element="div" />
         </div>
         <label for="name">이름</label>
@@ -27,7 +31,7 @@
             id="name"
             name="name"
             placeholder="이름을 입력하세요."
-            value="${inputData.name}"
+            value="${inputData.name}${errorData.name}"
           />
           <form:errors path="name" cssClass="validation-error" element="div" />
         </div>

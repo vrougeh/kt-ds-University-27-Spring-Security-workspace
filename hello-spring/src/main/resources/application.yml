@@ -1,7 +1,7 @@
 # 콘솔 로그 레벨 변경
-logging:
-  level:
-    root: debug
+#logging:
+#  level:
+#    root: debug
 
 # spring.application.name=hello-spring
 

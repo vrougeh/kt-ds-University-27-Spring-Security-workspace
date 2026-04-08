@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+	<appender name="ConsoleOutput"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}:%line -%kvp- %msg%n</pattern>
+		</encoder>
+	</appender>
+    
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	    <file>${user.home}/spring/logs/hello-spring.log</file>
+	    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	      <fileNamePattern>${user.home}/spring/logs/hello-spring.%d{yyyy-MM-dd}.log</fileNamePattern>
+	    </rollingPolicy>
+	    <encoder>
+	      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}:%line -%kvp- %msg%n</pattern>
+	    </encoder>
+	  </appender> 
+    
+    <!-- <root level="info">
+            모든 로그를 debug 이하 수준만 출력한다.
+         debug > info > warn > error -->
+    <!--  모든 로그를 info 이하 수준만 출력한다.
+         info > warn > error -->
+	<root level="info">
+		<appender-ref ref="ConsoleOutput" />
+		<appender-ref ref="FILE" />
+	</root>
+</configuration>

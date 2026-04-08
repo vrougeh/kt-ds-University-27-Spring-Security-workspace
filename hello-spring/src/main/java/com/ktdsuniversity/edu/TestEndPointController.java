@@ -1,5 +1,7 @@
 package com.ktdsuniversity.edu;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -12,13 +14,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller // 해당 클래스가 엔드포인트를 만들 수 있도록 지원해준다.
 public class TestEndPointController {
 
+	private static final Logger logger = LoggerFactory.getLogger(TestEndPointController.class);
+	
 	// Spring Application이 시작이 될 때
 	// @Controller가 적용된 모든 클래스를 찾아
 	// 해당 클래스들을 인스턴스로 생성한다.
 	// 생성된 인스턴스들은 Bean Container에 저장된다.
 	public TestEndPointController() {
-		System.out.println("TestEndPointController 인스턴스 만들어짐!");
-		System.out.println(this);
+		logger.debug("TestEndPointController 인스턴스 만들어짐!");
+		logger.debug("{}", this);
 	}
 	
 	/*
@@ -29,11 +33,11 @@ public class TestEndPointController {
 	public String viewHelloJspPage(Model model) {
 		// Model model parameter ==> Template Engine(JSP)에게 데이터를 전송시키는 객체.
 		// ????
-		System.out.println(model);
+		logger.debug("{}", model);
 		// myname이라는 키(변수명)로 "장민창" 할당해서 템플릿에게 전달.
 		model.addAttribute("myname", "장민창");
 		model.addAttribute("age", 42);
-		System.out.println(model);
+		logger.debug("{}", model);
 		
 		// spring.mvc.view.prefix + hellojsp + spring.mvc.view.suffix
 		// /WEB-INF/views/ + hellojsp + .jsp

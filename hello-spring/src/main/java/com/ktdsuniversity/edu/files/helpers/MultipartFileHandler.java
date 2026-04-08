@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +17,8 @@ import com.ktdsuniversity.edu.files.vo.request.UploadVO;
 @Component
 public class MultipartFileHandler {
 
+	private static final Logger logger = LoggerFactory.getLogger(MultipartFileHandler.class);
+	
 	@Autowired
 	private FilesDao filesDao;
 	
@@ -59,7 +63,7 @@ public class MultipartFileHandler {
 					
 					this.filesDao.insertAttachFile(uploadVO);
 				} catch (IllegalStateException | IOException e) {
-					e.printStackTrace();
+					logger.error("파일 업로드 중 에러 발생!", e);
 				}
 			}
 			

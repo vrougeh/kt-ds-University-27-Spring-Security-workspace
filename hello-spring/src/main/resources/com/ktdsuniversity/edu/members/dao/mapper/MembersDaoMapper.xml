@@ -28,7 +28,7 @@
             parameterType="string"
             resultType="com.ktdsuniversity.edu.members.vo.MembersVO">
         SELECT EMAIL
-             , NAME
+             ,, NAME
              , PASSWORD
              , SALT
              , TO_CHAR(REGIST_DATE, 'YYYY-MM-DD HH24:MI:SS') AS REGIST_DATE
