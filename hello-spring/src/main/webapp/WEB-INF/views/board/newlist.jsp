@@ -59,14 +59,30 @@
         </div>
         
         <ul class="page-navigator">
-          <c:forEach begin="0" 
-                     end="${pagination.pageCount - 1}" 
+          <c:if test="${pagination.hasPrevPageGroup}">
+            <li>
+              <a href="/?pageNo=0&listSize=${pagination.listSize}">처음</a>
+            </li>
+            <li>
+              <a href="/?pageNo=${pagination.prevPageGroupStartPageNo}&listSize=${pagination.listSize}">이전</a>
+            </li>
+          </c:if>
+          <c:forEach begin="${pagination.groupStartPageNo}" 
+                     end="${pagination.groupEndPageNo}" 
                      step="1"
                      var="page">
             <li>
               <a href="/?pageNo=${page}&listSize=${pagination.listSize}">${page + 1}</a>
             </li>
           </c:forEach>
+          <c:if test="${pagination.hasNextPageGroup}">
+            <li>
+              <a href="/?pageNo=${pagination.nextPageGroupStartPageNo}&listSize=${pagination.listSize}">다음</a>              
+            </li>
+            <li>
+              <a href="/?pageNo=${pagination.pageCount - 1}&listSize=${pagination.listSize}">마지막</a>
+            </li>
+          </c:if>
         </ul>
       </div>
 
