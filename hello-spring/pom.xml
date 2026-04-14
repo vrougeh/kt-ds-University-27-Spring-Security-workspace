@@ -33,6 +33,16 @@
     </properties>
     <dependencies>
 
+        <!--Spring Security 적용을 위한 라이브러리-->
+        <!--Spring Security는 라이브러리 추가만으로 인증절차가 추가된다-->
+        <!-- Source:
+        https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- 파라미터 유효성 검사(@Valid)를 사용하기 위한 라이브러리 추가. -->
         <!-- Source:
         https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation -->
