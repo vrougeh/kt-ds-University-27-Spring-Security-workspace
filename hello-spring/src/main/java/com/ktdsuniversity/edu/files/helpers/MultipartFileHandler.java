@@ -38,8 +38,9 @@ public class MultipartFileHandler {
 				// 전세계에서 동시에 발급받더라도 절대로 중복이 일어나지 않는다!
 				String obfuscateName = UUID.randomUUID().toString();
 				
+				String homepath = System.getProperty("user.home");
 				// 업로드한 파일이 서버컴퓨터의 파일 시스템에 저장되도록 한다.
-				File storeFile = new File("/Users/codemakers/uploadFiles"
+				File storeFile = new File(homepath+"/uploadFiles"
 										 , obfuscateName);
 				// C:\\uploadFiles 폴더가 없으면 생성해라!
 				if (!storeFile.getParentFile().exists()) {

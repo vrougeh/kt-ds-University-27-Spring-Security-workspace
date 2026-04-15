@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.ktdsuniversity.edu.board.enums.ReadType;
 import com.ktdsuniversity.edu.board.service.BoardService;
@@ -71,7 +71,8 @@ public class BoardController {
 								// 반드시 @Valid 파라미터 이후에 작성!
 							    BindingResult bindingResult,
 							    Model model,
-							    @SessionAttribute("__LOGIN_DATA__") MembersVO loginMember) {
+							    //Spring Security의 인증 토큰
+							    Authentication authentication) {
 		// 사용자의 입력값을 검증 했을 때, 에러가 있다면
 		if (bindingResult.hasErrors()) {
 			// 브라우저에게 "board/write" 페이지를 보여주도록 하고
@@ -79,9 +80,9 @@ public class BoardController {
 			model.addAttribute("inputData", writeVO);
 			return "board/write";
 		}
+		MembersVO loginUser = (MembersVO) authentication.getPrincipal();
 		
-		// 로그인 데이터(__LOGIN_DATA__)에서 로그인 한 사용자의 이메일을 가져온다.
-		writeVO.setEmail(loginMember.getEmail());
+		writeVO.setEmail(loginUser.getEmail());
 		
 		logger.debug(writeVO.getSubject());
 		logger.debug(writeVO.getEmail());
@@ -126,13 +127,14 @@ public class BoardController {
 	
 	@GetMapping("/update/{articleId}")
 	public String viewUpdatePage(@PathVariable String articleId, Model model
-							   , @SessionAttribute("__LOGIN_DATA__") MembersVO loginMember)  {
+							   , Authentication authentication)  {
 		BoardVO data = this.boardService.findBoardByArticleId(articleId, ReadType.UPDATE);
 		model.addAttribute("article", data);
 		
+		MembersVO loginUser = (MembersVO) authentication.getPrincipal();
 		// TODO 게시글의 이메일과 세션의 이메일을 비교할 때에는
 		// 항상 ServiceImpl에서 수행한다.
-		if (!loginMember.getEmail().equals(data.getEmail())) {
+		if (!loginUser.getEmail().equals(data.getEmail())) {
 			throw new HelloSpringException("잘못된 접근입니다.", "errors/403");
 		}
 		return "board/update";
@@ -141,11 +143,13 @@ public class BoardController {
 	@PostMapping("/update/{articleId}")
 	public String doUpdateAction(@PathVariable String articleId,
 			UpdateVO updateVO,
-			@SessionAttribute("__LOGIN_DATA__") MembersVO loginMember) {
+			Authentication authentication) {
 		
 		updateVO.setId(articleId);
 		
-		updateVO.setEmail(loginMember.getEmail());
+		MembersVO loginUser = (MembersVO) authentication.getPrincipal();
+		
+		updateVO.setEmail(loginUser.getEmail());
 		
 		boolean updateResult = this.boardService.updateBoardByArticleId(updateVO);
 		logger.debug("수정 성공? {}", updateResult);

@@ -30,4 +30,6 @@ public interface MembersDao {
 
 	int updateSuccessLogin(LoginVO loginVO);
 
+	List<String> selectMemberRolesByEmail(String email);
+
 }

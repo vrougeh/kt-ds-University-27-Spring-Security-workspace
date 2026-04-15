@@ -32,7 +32,14 @@
         <java.version>17</java.version>
     </properties>
     <dependencies>
-
+        <!-- Spring Security를 위한 JSTL 라이브러리-->
+        <!-- Spring Security로 인증받은 토큰을 통해 인증/권한 제어 목적-->
+        <!-- Source: https://mvnrepository.com/artifact/org.springframework.security/spring-security-taglibs -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-taglibs</artifactId>
+            <scope>compile</scope>
+        </dependency>
         <!--Spring Security 적용을 위한 라이브러리-->
         <!--Spring Security는 라이브러리 추가만으로 인증절차가 추가된다-->
         <!-- Source:

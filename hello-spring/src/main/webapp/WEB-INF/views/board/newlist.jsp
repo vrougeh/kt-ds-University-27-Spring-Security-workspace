@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" 
     pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
     <!-- /templates/header.jsp import -->
     <jsp:include page="/WEB-INF/views/templates/header.jsp">
         <jsp:param value="게시글 목록" name="title" />
@@ -54,9 +54,9 @@
 
         <div class="btn-group">
           <div class="right-align">
-            <c:if test="${not empty sessionScope.__LOGIN_DATA__}">
+          <sec:authorize access="isAuthenticated()">
               <a href="/write">새로운 게시글 작성</a>
-            </c:if>
+          </sec:authorize>
           </div>
         </div>
         

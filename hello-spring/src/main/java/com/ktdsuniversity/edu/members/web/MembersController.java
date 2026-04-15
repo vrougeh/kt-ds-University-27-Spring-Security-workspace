@@ -3,6 +3,9 @@ package com.ktdsuniversity.edu.members.web;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,18 +15,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
+import com.ktdsuniversity.edu.common.utils.ServletUtils;
 import com.ktdsuniversity.edu.members.service.MembersService;
 import com.ktdsuniversity.edu.members.vo.MembersVO;
-import com.ktdsuniversity.edu.members.vo.request.LoginVO;
 import com.ktdsuniversity.edu.members.vo.request.RegistVO;
 import com.ktdsuniversity.edu.members.vo.request.UpdateVO;
 import com.ktdsuniversity.edu.members.vo.response.DuplicateResultVO;
 import com.ktdsuniversity.edu.members.vo.response.SearchResultVO;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 /**
@@ -133,57 +133,29 @@ public class MembersController {
 		return "members/login"; 
 	}
 	
-	@PostMapping("/login")
-	public String doLoginAction(
-			@Valid @ModelAttribute LoginVO loginVO,
-			BindingResult bindingResult,
-			Model model,
-			@RequestParam(required = false, defaultValue = "/") String go,
-			HttpServletRequest request) {
-		
-		if (bindingResult.hasErrors()) {
-			model.addAttribute("loginData", loginVO);
-			return "members/login";
-		}
-		
-		String userIp = request.getRemoteAddr();
-		loginVO.setIp(userIp);
-		
-		MembersVO member = 
-				this.membersService
-				    .findMemberByEmailAndPassword(loginVO);
-		
-		// 서버의 세션을 삭제한다.
-		// 로그아웃.
-		request.getSession().invalidate();
-		
-		// request.getSession(); <== HttpRequestHeader로 전달된 JSESSIONID의 객체를 반환.
-		// request.getSession(true); <== 기존 JESSIONID로 발급된 세션객체는 버리고, 새로운 ID의 세션객체를 생성 후 반환.
-		HttpSession session = request.getSession(true);
-		session.setAttribute("__LOGIN_DATA__", member);
-		
-		return "redirect:" + go;
-	}
 	
 	@GetMapping("/logout")
-	public String doLogoutAction(HttpSession session) {
-		session.invalidate();
+	public String doLogoutAction(Authentication authentication) {
+		
+		//SecurityContext에서 인증받은 Authentication을 제거하는 객체
+		LogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+		logoutHandler.logout(ServletUtils.getRequest(), ServletUtils.getResponse(), authentication);
 		return "redirect:/login";
 	}
 	
 	@GetMapping("/delete-me")
 	public String doDeleteAction(
-			@SessionAttribute("__LOGIN_DATA__") MembersVO loginMember,
-			HttpSession session) {
+			Authentication authentication) {
+		MembersVO loginUser = (MembersVO) authentication.getPrincipal();
 		// 1. 로그인 세션에서 회원의 이메일을 가져온다.
-		String email = loginMember.getEmail();
+		String email = loginUser.getEmail();
 		
 		// 2. MEMBERS 테이블에서 회원의 정보를 이메일을 이용해 삭제한다.
 		boolean deleteSuccess = this.membersService.deleteMemberByEmail(email);
 		logger.debug("탈퇴 성공? {}", deleteSuccess);
 		
-		// 3. 현재 로그인된 사용자를 로그아웃 시킨다.
-		session.invalidate();
+		LogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+		logoutHandler.logout(ServletUtils.getRequest(), ServletUtils.getResponse(), authentication);
 		
 		// 4. "members/deletesuccess" 페이지를 보여준다.
 		//    "탈퇴가 완료됐습니다. 다음에 다시 만나요!"
