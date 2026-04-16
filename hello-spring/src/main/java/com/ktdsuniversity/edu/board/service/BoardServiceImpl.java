@@ -3,9 +3,13 @@ package com.ktdsuniversity.edu.board.service;
 import java.io.File;
 import java.util.List;
 
+import javax.swing.plaf.basic.BasicProgressBarUI;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,10 +21,13 @@ import com.ktdsuniversity.edu.board.vo.request.SearchListVO;
 import com.ktdsuniversity.edu.board.vo.request.UpdateVO;
 import com.ktdsuniversity.edu.board.vo.request.WriteVO;
 import com.ktdsuniversity.edu.board.vo.response.SearchResultVO;
+import com.ktdsuniversity.edu.common.utils.AuthUtils;
 import com.ktdsuniversity.edu.exceptions.HelloSpringException;
 import com.ktdsuniversity.edu.files.dao.FilesDao;
 import com.ktdsuniversity.edu.files.helpers.MultipartFileHandler;
 import com.ktdsuniversity.edu.files.vo.request.SearchFileGroupVO;
+import com.ktdsuniversity.edu.members.vo.MembersVO;
+import com.ktdsuniversity.edu.replies.dao.RepliesDao;
 
 @Service
 public class BoardServiceImpl implements BoardService {
@@ -38,6 +45,9 @@ public class BoardServiceImpl implements BoardService {
 	
 	@Autowired
 	private FilesDao filesDao;
+	
+	@Autowired
+	private RepliesDao repliesDao;
 
 	@Override
 	public SearchResultVO findAllBoard(SearchListVO searchListVO) {
@@ -100,6 +110,22 @@ public class BoardServiceImpl implements BoardService {
 		
 		// 2. 게시글 조회.
 		BoardVO board = this.boardDao.selectBoardById(articleId);
+		if(readType == ReadType.UPDATE) {
+			
+			String logUserEmail = AuthUtils.getUsername();
+			boolean isAdminAccount = AuthUtils.hasAnyRole("RL-20260414-000001", "RL-20260414-000002");
+			//위 코드로 변경
+//			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//			MembersVO loginUser = (MembersVO) authentication.getPrincipal();
+//			//슈퍼관리자 또는 관리자 권한을 가지고 있는지 검사
+//			List<String> roles = loginUser.getRoles();
+//			boolean isAdmin =roles.contains("RL-20260414-000001") || roles.contains("RL-20260414-000002");
+			
+			if (!isAdminAccount && !logUserEmail.equals(board.getEmail())) {
+				throw new HelloSpringException("잘못된 접근입니다.", "errors/403");
+			}
+		}
+		
 		
 		// 조회한 게시글을 반환.
 		return board;
@@ -108,6 +134,15 @@ public class BoardServiceImpl implements BoardService {
 	@Transactional
 	@Override
 	public boolean deleteBoardByArticleId(String id) {
+		
+		BoardVO board = this.boardDao.selectBoardById(id);
+
+		String logUserEmail = AuthUtils.getUsername();
+		boolean isAdminAccount = AuthUtils.hasAnyRole("RL-20260414-000001", "RL-20260414-000002");
+		if (!isAdminAccount && !logUserEmail.equals(board.getEmail())) {
+			throw new HelloSpringException("잘못된 접근입니다.", "errors/403");
+		}
+		
 		int deleteCount = this.boardDao.deleteBoardById(id);
 		
 		// 삭제하려는 게시글에 첨부된 파일 목록을 가져온다.
@@ -130,6 +165,17 @@ public class BoardServiceImpl implements BoardService {
 	@Transactional
 	@Override
 	public boolean updateBoardByArticleId(UpdateVO updateVO) {
+		
+		//게시글을 불러오고
+		BoardVO board = this.boardDao.selectBoardById(updateVO.getId());
+		//권한 검사한 이후에 경우에 따라 예외를 던져준다.
+		String logUserEmail = AuthUtils.getUsername();
+		boolean isAdminAccount = AuthUtils.hasAnyRole("RL-20260414-000001", "RL-20260414-000002");
+		if (!isAdminAccount && !logUserEmail.equals(board.getEmail())) {
+			throw new HelloSpringException("잘못된 접근입니다.", "errors/403");
+		}
+		
+		
 		// 선택한 파일들만 삭제.
 		if ( updateVO.getDeleteFileNum() != null && 
 				updateVO.getDeleteFileNum().size() > 0) {
@@ -164,6 +210,38 @@ public class BoardServiceImpl implements BoardService {
 		int updateCount = this.boardDao.updateBoardById(updateVO);
 		
 		return updateCount == 1;
+	}
+
+	@Override
+	public boolean deleteBoardAll() {
+		List<String> attachFilePaths = this.boardDao.selectFileInBoard();
+		attachFilePaths.addAll(this.repliesDao.selectFileInReplies());
+		
+		int deleteBoardCount = this.boardDao.deleteBoardAll();
+		int replyDeleteCount = 0;
+		int fileDeleteCount = 0;
+		if (deleteBoardCount > 0) {
+			replyDeleteCount = this.repliesDao.deleteAllReplies();
+			
+			File attachFile = null;
+			for (String filePath: attachFilePaths) {
+				attachFile = new File(filePath);
+				if (attachFile.exists()) {
+					attachFile.delete();
+				}
+				
+				this.filesDao.deleteFileGroupByFilePath(filePath);
+				fileDeleteCount += this.filesDao.deleteFileByFilePath(filePath);
+			}
+		}
+		
+		logger.debug("게시글 삭제 개수: {}", deleteBoardCount);
+		logger.debug("댓글 삭제 개수: {}", replyDeleteCount);
+		logger.debug("첨부파일 삭제 개수: {}", fileDeleteCount);
+		
+		return deleteBoardCount == 1;
+		
+		
 	}
 
 }

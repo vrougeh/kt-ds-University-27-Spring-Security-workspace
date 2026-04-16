@@ -3,6 +3,7 @@ package com.ktdsuniversity.edu.members.web;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -25,6 +26,7 @@ import com.ktdsuniversity.edu.members.vo.response.DuplicateResultVO;
 import com.ktdsuniversity.edu.members.vo.response.SearchResultVO;
 
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 
 /**
  * EndPoint 생성/관리.
@@ -55,12 +57,15 @@ public class MembersController {
 		return result;
 	}
 	
-	
 	@GetMapping("/regist")
-	public String viewRegistPage() {
+	public String viewRegistPage(Authentication authentication) {
+		if(authentication != null) {
+			return "redirect:/";
+		}
 		return "members/regist";
 	}
 	
+	@PreAuthorize(value = "isAnonymous()")
 	@PostMapping("/regist")
 	public String doRegistAction(
 			@Valid @ModelAttribute RegistVO registVO,
@@ -82,6 +87,8 @@ public class MembersController {
 	 * /member/update/사용자아이디 ==> 회원 정보 수정 하기.
 	 * /member/delete?id=사용자아이디 ==> 회원 정보 삭제 하기.
 	 */
+	//본인의 정보만 조회
+	@PreAuthorize(value = "isAuthenticated() and #email == authentication.principal.email") //메소드의 파라미터로 전달된 값(email)과 authentication에 할당된 email값을 비교한다
 	@GetMapping("/member/view/{email}")
 	public String viewMemberPage(@PathVariable String email, 
 			Model model) {
@@ -90,6 +97,8 @@ public class MembersController {
 		return "members/view";
 	}
 	
+	//본인의 정보만 조회
+	@PreAuthorize(value = "isAuthenticated() and #email == authentication.principal.email")
 	@GetMapping("/member/update/{email}")
 	public String viewUpdatePage(@PathVariable String email,
 			Model model) {
@@ -98,6 +107,8 @@ public class MembersController {
 		return "members/update";
 	}
 	
+	//본인의 정보만 조회
+	@PreAuthorize(value = "isAuthenticated() and #email == authentication.principal.email")
 	@PostMapping("/member/update/{email}")
 	public String doUpdateAction(@PathVariable String email,
 			UpdateVO updateVO) {
@@ -107,6 +118,9 @@ public class MembersController {
 		return "redirect:/member/view/" + email;
 	}
 	
+	//본인의 정보만 조회
+	@PreAuthorize(value = "isAuthenticated() and #id == authentication.principal.email")
+//	@PreAuthorize(value = "isAuthenticated()")
 	@GetMapping("/member/delete")
 	public String doDeleteAction(@RequestParam String id) {
 		boolean updateResult = this.membersService.deleteMemberByEmail(id);
@@ -120,6 +134,8 @@ public class MembersController {
 	//                          : 회원의 수 출력
 	//                          : 회원의 수가 없을 때, "등록된 회원이 없습니다" 출력
 	//                          : 목록 아래에는 "새로운 회원 등록" 링크 추가.
+	//관리자 계정에서만 볼 수 있도록 개선
+	@PreAuthorize(value = "hasRole('RL-20260414-000002')")
 	@GetMapping("/member")
 	public String viewMembersPage(Model model) {
 		SearchResultVO searchResult = this.membersService.findMembersList();
@@ -129,11 +145,14 @@ public class MembersController {
 	}
 	
 	@GetMapping("/login")
-	public String viewLoginPage() {
+	public String viewLoginPage(Authentication authentication) {
+		if(authentication != null) {
+			return "redirect:/";
+		}
 		return "members/login"; 
 	}
 	
-	
+	@PreAuthorize(value = "isAuthenticated()")
 	@GetMapping("/logout")
 	public String doLogoutAction(Authentication authentication) {
 		
@@ -142,7 +161,7 @@ public class MembersController {
 		logoutHandler.logout(ServletUtils.getRequest(), ServletUtils.getResponse(), authentication);
 		return "redirect:/login";
 	}
-	
+	@PreAuthorize(value = "isAuthenticated()")
 	@GetMapping("/delete-me")
 	public String doDeleteAction(
 			Authentication authentication) {
@@ -161,6 +180,8 @@ public class MembersController {
 		//    "탈퇴가 완료됐습니다. 다음에 다시 만나요!"
 		return "members/deletesuccess";
 	}
+	
+
 }
 
 

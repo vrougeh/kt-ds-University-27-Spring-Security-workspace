@@ -12,6 +12,10 @@
       <div class="grid list">
         <h1>게시글 목록</h1>
         <div>총 ${searchCount}개의 게시글이 검색되었습니다.</div>
+        <sec:authorize access="hasRole('RL-20260414-000001')" var="isSuperAdmin"/>
+        <c:if test="${isSuperAdmin}">
+            <a href="/delete/all">전체 게시글 삭제</a>
+        </c:if>
         <ul class="grid articles">
           <li class="header">
             <ul class="header-item">

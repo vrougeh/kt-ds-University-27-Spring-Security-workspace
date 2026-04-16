@@ -1,5 +1,6 @@
 package com.ktdsuniversity.edu.replies.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -24,5 +25,13 @@ public interface RepliesDao {
 	int deleteReplyByReplyId(String replyId);
 
 	int updateReplyByReplyId(UpdateVO updateVO);
+
+	int deleteRepliesByArticleId(String articleId);
+
+	Collection<? extends String> selectFileInReplies();
+
+	int deleteAllReplies();
+
+	List<String> selectFileInRepliesByArticleId(String articleId);
 
 }

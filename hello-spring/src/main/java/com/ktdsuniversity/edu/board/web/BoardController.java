@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -59,12 +60,14 @@ public class BoardController {
 	}
 	
 	// 게시글 등록 화면 보여주는 EndPoint
+	@PreAuthorize(value = "isAuthenticated()")
 	@GetMapping("/write")
 	public String viewWritePage() {
 		return "board/write";
 	}
 
 	// 게시글을 등록하는 EndPoint
+	@PreAuthorize(value = "isAuthenticated()")
 	@PostMapping("/write")
 	public String doWriteAction(@Valid @ModelAttribute WriteVO writeVO,
 								// @Valid의 결과를 받아오는 파라미터.
@@ -116,6 +119,14 @@ public class BoardController {
 		return "board/view";
 	}
 	
+	/**
+	 * 삭제하려는 게시글의 작성자가 본인이거나 슈퍼관리자이거나 관리자일 경웅에만 삭제를 수행한다.
+	 * 슈퍼관리자 관리자도 아니고 본인이 작성하지 않은 게시글 일경우 HelloSpringException을 던진다.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@PreAuthorize(value = "isAuthenticated()")
 	@GetMapping("/delete")
 	public String doDeleteAction(@RequestParam String id) {
 		
@@ -125,21 +136,17 @@ public class BoardController {
 		
 	}
 	
+	// 인증을 받은 사용자만 이 엔드포인트를 호출 할 수 있다.
+	@PreAuthorize(value = "isAuthenticated()")
 	@GetMapping("/update/{articleId}")
-	public String viewUpdatePage(@PathVariable String articleId, Model model
-							   , Authentication authentication)  {
+	public String viewUpdatePage(@PathVariable String articleId, Model model)  {
 		BoardVO data = this.boardService.findBoardByArticleId(articleId, ReadType.UPDATE);
 		model.addAttribute("article", data);
 		
-		MembersVO loginUser = (MembersVO) authentication.getPrincipal();
-		// TODO 게시글의 이메일과 세션의 이메일을 비교할 때에는
-		// 항상 ServiceImpl에서 수행한다.
-		if (!loginUser.getEmail().equals(data.getEmail())) {
-			throw new HelloSpringException("잘못된 접근입니다.", "errors/403");
-		}
 		return "board/update";
 	}
 	
+	@PreAuthorize(value = "isAuthenticated()")
 	@PostMapping("/update/{articleId}")
 	public String doUpdateAction(@PathVariable String articleId,
 			UpdateVO updateVO,
@@ -155,6 +162,15 @@ public class BoardController {
 		logger.debug("수정 성공? {}", updateResult);
 		
 		return "redirect:/view/" + articleId;
+	}
+	
+	@PreAuthorize(value = "hasRole('RL-20260414-000001')")
+	@GetMapping("/delete/all")
+	public String doDeleteAllAction() {
+		
+		boolean deleteResult = this.boardService.deleteBoardAll();
+		
+		return "redirect:/";
 	}
 	
 }

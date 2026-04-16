@@ -26,4 +26,8 @@ public interface BoardDao {
 
 	int updateBoardById(UpdateVO updateVO);
 
+	int deleteBoardAll();
+
+	List<String> selectFileInBoard();
+
 }

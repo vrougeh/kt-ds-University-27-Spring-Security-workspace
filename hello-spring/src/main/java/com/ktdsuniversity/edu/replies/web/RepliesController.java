@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -44,6 +45,7 @@ public class RepliesController {
 		return searchResult;
 	}
 	
+	@PreAuthorize(value = "isAuthenticated()")
 	@ResponseBody
 	@PostMapping("/api/replies-with-file")
 	public RepliesVO doCreateNewReplyWithFileAction(
@@ -73,6 +75,7 @@ public class RepliesController {
 	
 	// AJAX(API) 요청 / 반환.
 	// 요청 데이터 + 반환 데이터 ==> JSON
+	@PreAuthorize(value = "isAuthenticated()")
 	@ResponseBody
 	@PostMapping("/api/replies")
 	public RepliesVO doCreateNewReplyAction(
@@ -99,6 +102,7 @@ public class RepliesController {
 		return createResult;
 	}
 	
+	@PreAuthorize(value = "isAuthenticated()")
 	@ResponseBody
 	@GetMapping("/api/replies/recommend/{replyId}")
 	public RecommendResultVO doRecommendReplyByReplyId(
@@ -109,6 +113,7 @@ public class RepliesController {
 		return recommendResult;
 	}
 	
+	@PreAuthorize(value = "isAuthenticated()")
 	@ResponseBody
 	@GetMapping("/api/replies/delete/{replyId}")
 	public DeleteResultVO doDeleteReplyByReplyId(
@@ -119,6 +124,7 @@ public class RepliesController {
 		return deleteResult;
 	}
 	
+	@PreAuthorize(value = "isAuthenticated()")
 	@ResponseBody
 	@PostMapping("/api/replies/{replyId}")
 	public UpdateResultVO doUpdateReplyByReplyId(
@@ -138,6 +144,13 @@ public class RepliesController {
 		
 		UpdateResultVO updateResult = this.repliesService.updateReply(updateVO);
 		return updateResult;
+	}
+	
+	@PreAuthorize(value = "hasRole('RL-20260414-000001')")
+	@GetMapping("/reply/delete/all/{articleId}")
+	public String doDeleteAllByArticleIdAction(@PathVariable String articleId) {
+		boolean deleteResult = this.repliesService.deleteRepliesByArticleId(articleId);
+		return "redirect:/view/"+articleId;
 	}
 	
 }

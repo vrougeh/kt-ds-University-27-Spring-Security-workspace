@@ -209,12 +209,22 @@
             parameterType="com.ktdsuniversity.edu.board.vo.request.UpdateVO">
         UPDATE BOARD
 		   SET SUBJECT = #{subject}
-		     , EMAIL = #{email}
 		     , CONTENT = #{content}
 		     , MDFY_DT = SYSDATE
 		     , FILE_GROUP_ID = #{fileGroupId}
 		 WHERE ID = #{id}
     </update>
+    
+    <select id="selectFileInBoard" resultType="string">
+        SELECT F.FILE_PATH 
+          FROM BOARD B
+         INNER JOIN FILES F
+            ON B.FILE_GROUP_ID = F.FILE_GROUP_ID
+    </select>
+    <delete id="deleteBoardAll">
+        DELETE
+          FROM BOARD
+    </delete>
 </mapper>
 
 

@@ -28,4 +28,8 @@ public interface FilesDao {
 
 	int insertFileGroupId(String fileGroupId);
 
+	void deleteFileGroupByFilePath(String filePath);
+
+	int deleteFileByFilePath(String filePath);
+
 }

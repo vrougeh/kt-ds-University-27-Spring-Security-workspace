@@ -5,11 +5,13 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ktdsuniversity.edu.common.utils.AuthUtils;
 import com.ktdsuniversity.edu.exceptions.HelloSpringApiException;
 import com.ktdsuniversity.edu.exceptions.HelloSpringException;
 
@@ -27,6 +29,23 @@ import com.ktdsuniversity.edu.exceptions.HelloSpringException;
 public class GlobalExceptionHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+	
+	
+	@ExceptionHandler(AuthorizationDeniedException.class)
+	public String viewLoginPage(Model model) {
+		//로그인 했는지 안했는지 확인
+		boolean isAuthenticated =AuthUtils.isAuthenticated();
+		logger.debug("isAuthenticated  :  {}",isAuthenticated );
+		if(isAuthenticated) {
+			model.addAttribute("errorMessage","잘못된 접근입니다. 권한이 충분하지 않습니다");
+			return "errors/403";
+		}
+		//로그인이 안됐을 때
+		return "forward:/login";
+	}
+	
+	
+	
 	
 	/**
 	 * HelloSpringException이 던져지면,

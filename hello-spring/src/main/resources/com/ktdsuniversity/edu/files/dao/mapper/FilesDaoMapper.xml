@@ -89,13 +89,26 @@
           FROM DUAL 
     </select>
     
-    <insert id="insertFileGroupId"
-            parameterType="string">
+    <insert id="insertFileGroupId" parameterType="string">
         INSERT INTO FILES_GROUP
-		 (FILE_GROUP_ID)
+		     ( FILE_GROUP_ID)
 		VALUES 
-		 (#{_parameter})
+		     ( #{_parameter})
     </insert>
+    
+        <delete id="deleteFileByFilePath" parameterType="string">
+        DELETE 
+          FROM FILES
+         WHERE FILE_PATH = #{_parameter}
+    </delete>
+
+    <delete id="deleteFileGroupByFilePath" parameterType="string">
+        DELETE
+          FROM FILES_GROUP
+         WHERE FILE_GROUP_ID = (SELECT FILE_GROUP_ID
+                                  FROM FILES
+                                 WHERE FILE_PATH = #{_parameter})
+    </delete>
 </mapper>
 
 

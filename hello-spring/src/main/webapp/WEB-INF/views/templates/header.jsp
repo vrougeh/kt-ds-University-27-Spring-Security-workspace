@@ -28,6 +28,7 @@
               <sec:authentication property='principal.name'/>
               (<sec:authentication property='principal.email'/>)
             </div>
+            <a href="/">홈</a>
             <a href="/member/view/<sec:authentication property='principal.email'/>"
               >마이페이지</a
             >

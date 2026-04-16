@@ -48,8 +48,8 @@
 
         <label for="content">내용</label>
         <textarea id="content" name="content" placeholder="내용을 입력하세요">
-${article.content}</textarea
-        >
+            ${article.content}
+        </textarea>
 
         <div class="btn-group">
           <div class="right-align">
