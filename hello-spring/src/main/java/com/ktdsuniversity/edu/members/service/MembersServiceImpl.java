@@ -2,6 +2,8 @@ package com.ktdsuniversity.edu.members.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,12 +13,16 @@ import com.ktdsuniversity.edu.exceptions.HelloSpringException;
 import com.ktdsuniversity.edu.members.dao.MembersDao;
 import com.ktdsuniversity.edu.members.helpers.SHA256Util;
 import com.ktdsuniversity.edu.members.vo.MembersVO;
+import com.ktdsuniversity.edu.members.vo.request.MemberSearchVO;
 import com.ktdsuniversity.edu.members.vo.request.RegistVO;
 import com.ktdsuniversity.edu.members.vo.request.UpdateVO;
 import com.ktdsuniversity.edu.members.vo.response.SearchResultVO;
+import com.ktdsuniversity.edu.members.web.MembersController;
 
 @Service
 public class MembersServiceImpl implements MembersService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(MembersController.class);
 
 	@Autowired
 	private MembersDao membersDao;
@@ -72,16 +78,19 @@ public class MembersServiceImpl implements MembersService {
 	}
 
 	@Override
-	public SearchResultVO findMembersList() {
+	public SearchResultVO findMembersList(MemberSearchVO memberSearchVO) {
 		SearchResultVO result = new SearchResultVO();
-		int searchCount = this.membersDao.selectMembersCount();
+		int searchCount = this.membersDao.selectMembersCount(memberSearchVO);
 		result.setCount(searchCount);
-
+		
+		
+		memberSearchVO.computePagination(searchCount);
+		
 		if (searchCount == 0) {
 			return result;
 		}
 
-		List<MembersVO> searchResult = this.membersDao.selectMembersList();
+		List<MembersVO> searchResult = this.membersDao.selectMembersList(memberSearchVO);
 		result.setResult(searchResult);
 
 		return result;
