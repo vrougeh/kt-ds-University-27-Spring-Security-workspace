@@ -156,7 +156,7 @@ public class RepliesServiceImpl implements RepliesService {
 			String logUserEmail = AuthUtils.getUsername();
 			boolean isAdminAccount = AuthUtils.hasAnyRole("RL-20260414-000001", "RL-20260414-000002");
 			//관리자가 아니고 내가 작성한댓글도 아니라면 수정할 수 없다.
-			if (!isAdminAccount && logUserEmail.equals(reply.getEmail())) {
+			if (!isAdminAccount && !logUserEmail.equals(reply.getEmail())) {
 				throw new HelloSpringApiException(
 						"권한이 부족합니다.", 
 						HttpStatus.BAD_REQUEST.value(), 

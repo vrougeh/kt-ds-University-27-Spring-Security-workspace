@@ -1,8 +1,14 @@
 package com.ktdsuniversity.edu.exceptions;
 
 public class HelloSpringApiException extends RuntimeException {
-	private static final long serialVersionUID = -7175349620697935148L;
 
+	
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6254362551831524113L;
+	
 	private int errorStatus;
 	private Object error;
 
