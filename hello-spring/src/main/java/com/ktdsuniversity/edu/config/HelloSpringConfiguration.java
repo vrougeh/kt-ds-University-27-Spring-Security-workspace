@@ -1,7 +1,7 @@
 package com.ktdsuniversity.edu.config;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -13,21 +13,25 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.ktdsuniversity.edu.exceptions.handlers.AuthorizationDeniedExceptionHandler;
 import com.ktdsuniversity.edu.members.dao.MembersDao;
+import com.ktdsuniversity.edu.security.authenticate.filters.JsonWebTokenAuthenticationFilter;
 import com.ktdsuniversity.edu.security.authenticate.handlers.LoginFailureHandler;
 import com.ktdsuniversity.edu.security.authenticate.handlers.LoginSuccessHandler;
 import com.ktdsuniversity.edu.security.authenticate.service.SecurityPasswordEncoder;
 import com.ktdsuniversity.edu.security.authenticate.service.SecurityUserDetailsService;
+import com.ktdsuniversity.edu.security.providers.JsonWebTokenAuthenticationProvider;
 import com.ktdsuniversity.edu.security.providers.UsernameAndPasswordAuthenticationProvider;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 // application.yml에서 작성할 수 없는 설정들을 적용하기 위한 Annotation
 // @Component 의 자식 Annotation
@@ -50,6 +54,18 @@ public class HelloSpringConfiguration implements
 	
 	@Autowired
 	private MembersDao membersDao;
+	
+	//application.yml에서 관련된 정보를 가져온다
+	// @Value가 동작하는 조건 : @Component가 적용된 클래스에서만 가능(@Component 의 자식 Annotation인 @Configuration이 선언 되어있음)
+	@Value("${app.jwt.secret-key}") // 환경 설정 정보를 Bean으로 가져오는 방법 괄호에 환경 설정 경로를 작성
+	private String jwtSecretKey;
+	@Value("${app.jwt.issuer}")
+	private String jwtIssuer;
+	
+	@Bean
+	JsonWebTokenAuthenticationProvider createJwtAuthenticationProvider() {
+		return new JsonWebTokenAuthenticationProvider(this.jwtSecretKey, this.jwtIssuer);
+	}
 	
 	//SecurityPasswordEncoder의 Bean을 생성한다.
 	@Bean // 메소드가 실행 되어서 반환되는 객체를 Bean Container에 적재한다
@@ -83,6 +99,12 @@ public class HelloSpringConfiguration implements
 		return new LoginFailureHandler(this.membersDao);
 	}
 	
+	@Bean
+	OncePerRequestFilter createJwtAuthFilter() {
+		return new JsonWebTokenAuthenticationFilter(this.createJwtAuthenticationProvider(), this.createUserDetailsService());
+	}
+	
+	
 	// Spring Login Filter(BasicAuthenticationFilter) 등록
 	// Spring Security의 기본 로그인 절차를 수정하는 작업
 	@Bean
@@ -112,6 +134,15 @@ public class HelloSpringConfiguration implements
 		// CSRF 수정, 댓글 등록 불가(Invalid CSRF token found for ...)
 		// CSRF를 체크하는 SecurityFilter(CsrfFilter)를 무효화
 //		httpSecurity.csrf(csrf -> csrf.disable());
+		//API 통신에서는 CSRF를 체크하지 않도록 설정
+		httpSecurity.csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
+		
+		// Custom Filter(JsonWebTokenAuthenticationFilter) 추가 (?filter 뒤에 내가 만든 filter를 넣어서 실행,?filter)
+		httpSecurity.addFilterAfter(this.createJwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
+		
+		// AuthorizationDeniedExceptionHandler를 추가
+		// Controller 코드 이하에서 @PreAuthorized() 검증에 실패하면 아래 설정에 등록한 Handler가 동작
+		httpSecurity.exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(new AuthorizationDeniedExceptionHandler()));
 		
 		//UsernamePasswordAuthenticationFilter 수정
 		httpSecurity.formLogin(formLogin -> 

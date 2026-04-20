@@ -30,23 +30,6 @@ public class GlobalExceptionHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 	
-	
-	@ExceptionHandler(AuthorizationDeniedException.class)
-	public String viewLoginPage(Model model) {
-		//로그인 했는지 안했는지 확인
-		boolean isAuthenticated =AuthUtils.isAuthenticated();
-		logger.debug("isAuthenticated  :  {}",isAuthenticated );
-		if(isAuthenticated) {
-			model.addAttribute("errorMessage","잘못된 접근입니다. 권한이 충분하지 않습니다");
-			return "errors/403";
-		}
-		//로그인이 안됐을 때
-		return "forward:/login";
-	}
-	
-	
-	
-	
 	/**
 	 * HelloSpringException이 던져지면,
 	 * viewErrorPage가 실행된다.
