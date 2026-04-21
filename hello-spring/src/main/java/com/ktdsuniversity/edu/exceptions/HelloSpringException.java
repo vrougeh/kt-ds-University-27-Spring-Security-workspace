@@ -8,7 +8,7 @@ public class HelloSpringException extends RuntimeException {
 	 * 예외가 발생했을 때, 사용자에게 보여주고 싶은 페이지(템플릿/뷰)의 이름.
 	 */
 	private String errorPage;
-	
+
 	/**
 	 * 사용자에게 보여주고 싶은 페이지(템플릿/뷰)에 보내줄 모델 데이터.
 	 */
@@ -18,7 +18,7 @@ public class HelloSpringException extends RuntimeException {
 		super(message);
 		this.errorPage = errorPage;
 	}
-	
+
 	public HelloSpringException(String message, String errorPage, Object object) {
 		super(message);
 		this.errorPage = errorPage;

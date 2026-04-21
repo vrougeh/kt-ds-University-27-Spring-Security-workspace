@@ -31,7 +31,7 @@ public class DownloadVO {
 		// 영어를 제외한 글자들이 사라지는 현상.
 		// ==> 사라지지 않도록 다국어 지원.
 		this.displayName = displayName;
-		
+
 		try {
 			this.displayName = URLEncoder.encode(displayName, "UTF-8");
 		} catch (UnsupportedEncodingException e) {

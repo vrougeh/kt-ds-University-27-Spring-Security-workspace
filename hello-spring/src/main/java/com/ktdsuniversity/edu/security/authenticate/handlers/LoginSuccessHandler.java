@@ -14,13 +14,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
-	
+
 	private MembersDao membersDao;
-	
+
 	public LoginSuccessHandler(MembersDao membersDao) {
 		this.membersDao = membersDao;
 	}
-	
+
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request,
 										HttpServletResponse response,
@@ -28,14 +28,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		LoginVO loginVO = new LoginVO();
 		loginVO.setIp(request.getRemoteAddr());
 		loginVO.setEmail(authentication.getName());
-		
+
 		this.membersDao.updateSuccessLogin(loginVO);
-		
+
 		//HttpServletRequest에서 파라미터를 가져오는방법
 		String go = request.getParameter("go");
-		
-		
-		
+
+
+
 		response.sendRedirect(StringUtils.emptyTo(go, "/"));
 
 	}

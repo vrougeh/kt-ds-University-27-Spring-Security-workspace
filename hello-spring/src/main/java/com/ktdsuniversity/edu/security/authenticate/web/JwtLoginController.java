@@ -31,7 +31,7 @@ import jakarta.validation.Valid;
  */
 @Controller
 public class JwtLoginController {
-	
+
 	@Autowired
 	private UserDetailsService userDetailsService;
 
@@ -40,7 +40,7 @@ public class JwtLoginController {
 
 	@Autowired
 	private MembersDao membersDao;
-	
+
 	@Autowired
 	private JsonWebTokenAuthenticationProvider jwtAuthenticationProvider;
 
@@ -52,7 +52,7 @@ public class JwtLoginController {
 		}
 
 		UserDetails userDetails = null;
-		
+
 		// 이메일을 통해서 회원의 정보르 조회
 		try {
 		userDetails = this.userDetailsService.loadUserByUsername(loginVO.getEmail());
@@ -62,14 +62,14 @@ public class JwtLoginController {
 		if(!userDetails.isAccountNonLocked()) {
 			throw new HelloSpringApiException("로그인 실패", HttpStatus.BAD_REQUEST.value(), "아이디 또는 비밀번호가 일치하지 않습니다.");
 		}
-		
+
 		// 비밀번호 일치 검사 수행
 		String password = loginVO.getPassword();
 		SecurityPasswordEncoder securityPasswordEncoder = (SecurityPasswordEncoder) this.passwordEncoder;
-		
+
 		SecurityUser securityUser = (SecurityUser) userDetails;
 		MembersVO membersVO =securityUser.getMembersVO();
-		
+
 		if(!securityPasswordEncoder.matches(password, membersVO.getSalt(), membersVO.getPassword())) {
 			this.membersDao.updateIncreaseLoginFailCount(loginVO.getEmail());
 			this.membersDao.updateBlock(loginVO.getEmail());
@@ -77,10 +77,10 @@ public class JwtLoginController {
 		}
 		loginVO.setIp(ServletUtils.getIp());
 		this.membersDao.updateSuccessLogin(loginVO);
-		
+
 		// JWT 생성 후 API 결과 반환
 		String jwt = this.jwtAuthenticationProvider.makeJsonWebToken(loginVO.getEmail(), Duration.ofHours(9));
-		
+
 		return Map.of("token",jwt);
 	}
 

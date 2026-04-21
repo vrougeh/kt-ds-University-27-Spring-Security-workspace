@@ -18,5 +18,5 @@ public class FilesServiceImpl implements FilesService {
 		DownloadVO result = this.filesDao.selectFilesByFileGroupIdAndFileNum(searchFileVO);
 		return result;
 	}
-	
+
 }

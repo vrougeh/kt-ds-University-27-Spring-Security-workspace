@@ -19,13 +19,13 @@ public class AuthorizationDeniedExceptionHandler  implements AccessDeniedHandler
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 			AccessDeniedException accessDeniedException) throws IOException, ServletException {
-		
+
 		Boolean isApiRequest = request.getServletPath().startsWith("/api/");
 		// AuthorizationDeniedException이 발생한 위치가 "/api/"라면 JSON으로 에러메시지를 전달
 		if(isApiRequest) {
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application/json");
-			
+
 			PrintWriter writer = response.getWriter();
 			writer.append("{ \"error\" : \"인증이 필요하거나 잘못된 권한입니다.\" }");
 			writer.flush();

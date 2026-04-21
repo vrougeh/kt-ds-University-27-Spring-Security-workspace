@@ -23,7 +23,7 @@ import com.ktdsuniversity.edu.board.vo.request.SearchListVO;
 import com.ktdsuniversity.edu.board.vo.request.UpdateVO;
 import com.ktdsuniversity.edu.board.vo.request.WriteVO;
 import com.ktdsuniversity.edu.board.vo.response.SearchResultVO;
-import com.ktdsuniversity.edu.exceptions.HelloSpringException;
+import com.ktdsuniversity.edu.common.utils.AuthUtils;
 import com.ktdsuniversity.edu.members.vo.MembersVO;
 
 import jakarta.validation.Valid;
@@ -32,33 +32,33 @@ import jakarta.validation.Valid;
 public class BoardController {
 
 	private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
-	
+
 	/**
 	 * 빈 컨테이너에 들어있는 객체 중 타입이 일치하는 객체를 할당 받는다.
 	 */
 	@Autowired
 	private BoardService boardService;
-	
+
 	// http://192.168.211.11:8080/?pageNo=0&listSize=10&searchType=&searchKeyword
 	@GetMapping("/")
 	public String viewListPage(Model model, SearchListVO searchListVO) {
-		
+
 		SearchResultVO searchResult = this.boardService.findAllBoard(searchListVO);
-		
+
 		// 게시글의 목록을 조회.
 		List<BoardVO> list = searchResult.getResult();
-		
+
 		// 게시글의 개수 조회.
 		int searchCount = searchResult.getCount();
-		
+
 		model.addAttribute("searchResult", list);
 		model.addAttribute("searchCount", searchCount);
-		
+
 		model.addAttribute("pagination", searchListVO);
-		
+
 		return "board/newlist";
 	}
-	
+
 	// 게시글 등록 화면 보여주는 EndPoint
 	@PreAuthorize(value = "isAuthenticated()")
 	@GetMapping("/write")
@@ -83,94 +83,94 @@ public class BoardController {
 			model.addAttribute("inputData", writeVO);
 			return "board/write";
 		}
-		MembersVO loginUser = (MembersVO) authentication.getPrincipal();
-		
+		MembersVO loginUser = AuthUtils.getPrincipal();
+
 		writeVO.setEmail(loginUser.getEmail());
-		
+
 		logger.debug(writeVO.getSubject());
 		logger.debug(writeVO.getEmail());
 		logger.debug(writeVO.getContent());
-		
+
 		// create, update, delete => 성공/실패 여부 반환.
 		boolean createResult = this.boardService.createNewBoard(writeVO);
-		
+
 		logger.debug("게시글 생성 성공? {}", createResult);
-		
+
 		// redirect: 브라우저에게 다음 End Point를 요청하도록 지시.
 		// redirect:/ ==> 브라우저에게 "/" endpoint 로 이동하도록 지시.
 		return "redirect:/";
 	}
-	
+
 	// 게시글 내용 조회.
 	// endpoint ==> /view/게시글아이디 예> /view/BO-20260327-000001
 	// 해야 하는 역할
 	//  1. 게시글 내용을 조회해서 브라우저에게 노출.
 	//  2. 조회수 1증가.
 	@GetMapping("/view/{articleId}")
-	public String viewDetailPage(Model model, 
+	public String viewDetailPage(Model model,
 			@PathVariable String articleId) {
-		
+
 		// articleId로 데이터베이스에서 게시글을 조회한다.
 		// 조회할 때 조회수가 하나 증가해야 한다.
 		BoardVO findResult = this.boardService.findBoardByArticleId(articleId, ReadType.VIEW);
-		
+
 		model.addAttribute("article", findResult);
-		
+
 		return "board/view";
 	}
-	
+
 	/**
 	 * 삭제하려는 게시글의 작성자가 본인이거나 슈퍼관리자이거나 관리자일 경웅에만 삭제를 수행한다.
 	 * 슈퍼관리자 관리자도 아니고 본인이 작성하지 않은 게시글 일경우 HelloSpringException을 던진다.
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
 	@PreAuthorize(value = "isAuthenticated()")
 	@GetMapping("/delete")
 	public String doDeleteAction(@RequestParam String id) {
-		
+
 		boolean deleteResult = this.boardService.deleteBoardByArticleId(id);
 		logger.debug("삭제 결과? {}", deleteResult);
 		return "redirect:/";
-		
+
 	}
-	
+
 	// 인증을 받은 사용자만 이 엔드포인트를 호출 할 수 있다.
 	@PreAuthorize(value = "isAuthenticated()")
 	@GetMapping("/update/{articleId}")
 	public String viewUpdatePage(@PathVariable String articleId, Model model)  {
 		BoardVO data = this.boardService.findBoardByArticleId(articleId, ReadType.UPDATE);
 		model.addAttribute("article", data);
-		
+
 		return "board/update";
 	}
-	
+
 	@PreAuthorize(value = "isAuthenticated()")
 	@PostMapping("/update/{articleId}")
 	public String doUpdateAction(@PathVariable String articleId,
 			UpdateVO updateVO,
 			Authentication authentication) {
-		
+
 		updateVO.setId(articleId);
-		
-		MembersVO loginUser = (MembersVO) authentication.getPrincipal();
-		
+
+		MembersVO loginUser = AuthUtils.getPrincipal();
+
 		updateVO.setEmail(loginUser.getEmail());
-		
+
 		boolean updateResult = this.boardService.updateBoardByArticleId(updateVO);
 		logger.debug("수정 성공? {}", updateResult);
-		
+
 		return "redirect:/view/" + articleId;
 	}
-	
+
 	@PreAuthorize(value = "hasRole('RL-20260414-000001')")
 	@GetMapping("/delete/all")
 	public String doDeleteAllAction() {
-		
+
 		boolean deleteResult = this.boardService.deleteBoardAll();
-		
+
 		return "redirect:/";
 	}
-	
+
 }

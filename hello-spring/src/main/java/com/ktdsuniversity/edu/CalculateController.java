@@ -28,13 +28,13 @@ public class CalculateController {
 	public String viewCalcPage(Model model) {
 		int firstNum = 3;
 		int secondNum = 5;
-		
+
 		model.addAttribute("firstNum", firstNum);
 		model.addAttribute("secondNum", secondNum);
 		model.addAttribute("result", firstNum + secondNum);
 		return "calc";
 	}
-	
+
 	/**
 	 * <pre>
 	 * Browser에서 Endpoint로 파라미터를 보내는 3가지 방법.
@@ -43,11 +43,11 @@ public class CalculateController {
 	 *       예> /calc2?firstNum=3&second=10
 	 *    2. Form Parameter => <form></form> 를 이용해서 보내는 방법
 	 *       예> <form action="/endpoint">
-	 *              <input name="key" value="value" /> 
+	 *              <input name="key" value="value" />
 	 *              <select name="key2">
 	 *                 <option value="value2">Text</option>
 	 *                 <option value="value3">Other Text</option>
-	 *              </select> 
+	 *              </select>
 	 *              <textarea name="key3">Value</textarea>
 	 *           </form>
 	 *    3. Request Body - Http Request Body 영역에 파라미터를 보내는 방법
@@ -58,7 +58,7 @@ public class CalculateController {
 	 *    * Spring 전용 Parameter
 	 *       => Path(URL) Variable
 	 *          => Query String Parameter 외의 파라미터를 URL로 보내는 방법.
-	 *  
+	 *
 	 *  Spring Endpoint 에서 파라미터를 받아오는 4가지 방법.
 	 *     1. HttpServletRequest 객체를 이용하는 방법 (스프링에서는 잘 사용되지 않는다)
 	 *        => Query String Parameter, Form Parameter, Request Body
@@ -78,17 +78,17 @@ public class CalculateController {
 	// /calc2?f=null&s=null
 	@GetMapping("/calc2")
 	public String viewParamCalcPage(
-			@RequestParam(required = false, defaultValue = "0") int f, 
-			@RequestParam(required = false, defaultValue = "0") int s, 
+			@RequestParam(required = false, defaultValue = "0") int f,
+			@RequestParam(required = false, defaultValue = "0") int s,
 			Model model) {
-		
+
 		int result = f + s;
 		model.addAttribute("firstNum", f);
 		model.addAttribute("secondNum", s);
 		model.addAttribute("result", result);
 
-		
-		return "calc"; 
+
+		return "calc";
 	}
-	
+
 }

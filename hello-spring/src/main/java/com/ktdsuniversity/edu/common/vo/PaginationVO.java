@@ -145,7 +145,7 @@ public class PaginationVO {
 
 	/**
 	 * 조회된 리스트의 개수와 listSize를 이용해 총 몇 개의 페이지가 필요한 지 계산.
-	 * 
+	 *
 	 * @param listItemCount 리스트 아이템의 개수
 	 */
 	public void computePagination(int listItemCount) {

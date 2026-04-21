@@ -5,10 +5,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ktdsuniversity.edu.common.utils.AuthUtils;
+import com.ktdsuniversity.edu.common.utils.ServletUtils;
+import com.ktdsuniversity.edu.exceptions.HelloSpringApiException;
 import com.ktdsuniversity.edu.exceptions.HelloSpringException;
 import com.ktdsuniversity.edu.members.dao.MembersDao;
 import com.ktdsuniversity.edu.members.helpers.SHA256Util;
@@ -21,7 +23,7 @@ import com.ktdsuniversity.edu.members.web.MembersController;
 
 @Service
 public class MembersServiceImpl implements MembersService {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(MembersController.class);
 
 	@Autowired
@@ -33,7 +35,11 @@ public class MembersServiceImpl implements MembersService {
 
 		MembersVO membersVO = this.membersDao.selectMemberByEmail(registVO.getEmail());
 		if (membersVO != null) {
-			throw new HelloSpringException("이미 사용중인 이메일입니다.", "members/regist", registVO);
+			if(ServletUtils.isApiRequest()) {
+				throw new HelloSpringApiException("이메일 유효성 검사 실패", HttpStatus.BAD_REQUEST.value(), "이미 사용중인 이메일입니다.");
+			} else {
+				throw new HelloSpringException("이미 사용중인 이메일입니다.", "members/regist", registVO);
+			}
 		}
 
 		// 암호화를 위한 비밀키 생성.
@@ -82,10 +88,10 @@ public class MembersServiceImpl implements MembersService {
 		SearchResultVO result = new SearchResultVO();
 		int searchCount = this.membersDao.selectMembersCount(memberSearchVO);
 		result.setCount(searchCount);
-		
-		
+
+
 		memberSearchVO.computePagination(searchCount);
-		
+
 		if (searchCount == 0) {
 			return result;
 		}

@@ -19,7 +19,7 @@ public interface RepliesService {
 	RepliesVO findReplyByReplyId(String replyId);
 
 	RecommendResultVO updateRecommendByReplyId(String replyId);
-	
+
 	DeleteResultVO deleteReplyByReplyId(String replyId);
 
 	UpdateResultVO updateReply(@Valid UpdateVO updateVO);

@@ -14,22 +14,22 @@ import com.ktdsuniversity.edu.members.vo.MembersVO;
  */
 public class SecurityUser implements UserDetails {
 
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -1916873876236024863L;
-	
+
 	/**
 	 * UserDetails 인터페이스로 사용자의 세부 내용을 알 수 없기 때문에
 	 * 사용자의 정보를 가지고 있는 memberVO를 멤버변수로 추가해준다
 	 */
 	private MembersVO membersVO;
-	
+
 	public SecurityUser(MembersVO membersVO) {
 		this.membersVO = membersVO;
 	}
-	
+
 	public MembersVO getMembersVO() {
 		return this.membersVO;
 	}
@@ -62,7 +62,7 @@ public class SecurityUser implements UserDetails {
 	}
 
 	/**
-	 * 사용자의 아이디(식별가능한)	
+	 * 사용자의 아이디(식별가능한)
 	 */
 	@Override
 	public String getUsername() {

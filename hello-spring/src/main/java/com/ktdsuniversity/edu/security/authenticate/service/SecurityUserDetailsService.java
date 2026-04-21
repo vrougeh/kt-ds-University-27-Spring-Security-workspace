@@ -23,7 +23,7 @@ public class SecurityUserDetailsService implements UserDetailsService {
 
 	/**
 	 * 아이디로 데이터베이스에서 회원의 정보를 조회한다.
-	 * 
+	 *
 	 * @param username : 아이디(이메일)
 	 * @return DB에서 조회한 회원의 정보(SecurityUser)
 	 * @throws UsernameNotFoundException : DB에 회원의 정보가 없을 때 던지는 예외
@@ -31,14 +31,14 @@ public class SecurityUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		MembersVO loadUser = this.membersDao.selectMemberByEmail(username);
-		
+
 		if(loadUser == null) {
 			throw new UsernameNotFoundException("아이디 또는 비밀번호가 일치하지 않습니다.");
 		}
-		
+
 		List<String> userRole = this.membersDao.selectMemberRolesByEmail(username);
 		loadUser.setRoles(userRole);
-		
+
 		return new SecurityUser(loadUser);
 	}
 

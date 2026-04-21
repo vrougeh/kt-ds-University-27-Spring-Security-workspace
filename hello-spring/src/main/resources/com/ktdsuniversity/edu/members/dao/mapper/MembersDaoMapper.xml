@@ -110,4 +110,24 @@
 		                         WHERE EMAIL = #{_parameter}) 
 		CONNECT BY PRIOR ROLE_ID = TOP_ROLE_ID 
     </select>
+    <select id="selectOAuthMemberByEmailAndRegistrationId" parameterType="com.ktdsuniversity.edu.members.vo.request.OAuthMemberVO" resultType="com.ktdsuniversity.edu.members.vo.request.OAuthMemberVO">
+    SELECT REGISTRATION_ID
+         , EMAIL
+         , NAME
+  	  FROM SPRING_BOOT.OAUTH_MEMBERS
+	 WHERE EMAIL = #{email}
+	   AND REGISTRATION_ID = #{registrationId}
+    </select>
+    
+    <insert id="insertNewOAuthMember" parameterType="com.ktdsuniversity.edu.members.vo.request.OAuthMemberVO">
+    INSERT INTO SPRING_BOOT.OAUTH_MEMBERS
+	     ( REGISTRATION_ID
+	     , EMAIL
+	     , NAME)
+	VALUES 
+	     ( #{registrationId}
+	     , #{email}
+	     , #{name})
+    </insert>
+    
 </mapper>

@@ -9,16 +9,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * SHA-256 암호화
- * 
+ *
  * @author Minchang Jang
  */
 public class SHA256Util {
 
 	private static final Logger logger = LoggerFactory.getLogger(SHA256Util.class);
-	
+
 	/**
 	 * SHA-256 암호화 함
-	 * 
+	 *
 	 * @param source       원본
 	 * @param salt(String) SALT 값
 	 * @return
@@ -29,7 +29,7 @@ public class SHA256Util {
 
 	/**
 	 * SHA-256 암호화 함
-	 * 
+	 *
 	 * @param source       원본
 	 * @param salt(byte[]) SALT 값
 	 * @return
@@ -48,8 +48,8 @@ public class SHA256Util {
 			byte[] byteData = md.digest();
 
 			StringBuffer sb = new StringBuffer();
-			for (int i = 0; i < byteData.length; i++) {
-				sb.append(Integer.toString((byteData[i] & 0xFF) + 256, 16).substring(1));
+			for (byte element : byteData) {
+				sb.append(Integer.toString((element & 0xFF) + 256, 16).substring(1));
 			}
 			result = sb.toString();
 		} catch (NoSuchAlgorithmException e) {
@@ -60,7 +60,7 @@ public class SHA256Util {
 
 	/**
 	 * SALT를 얻어온다.
-	 * 
+	 *
 	 * @return
 	 */
 	public static String generateSalt() {
@@ -70,9 +70,9 @@ public class SHA256Util {
 		random.nextBytes(salt);
 
 		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < salt.length; i++) {
+		for (byte element : salt) {
 			// byte 값을 Hex 값으로 바꾸기.
-			sb.append(String.format("%02x", salt[i]));
+			sb.append(String.format("%02x", element));
 		}
 		return sb.toString();
 	}

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ktdsuniversity.edu.common.utils.AuthUtils;
 import com.ktdsuniversity.edu.exceptions.HelloSpringApiException;
 import com.ktdsuniversity.edu.members.vo.MembersVO;
 import com.ktdsuniversity.edu.replies.service.RepliesService;
@@ -34,17 +35,17 @@ import jakarta.validation.Valid;
 public class RepliesController {
 
 	private static final Logger logger = LoggerFactory.getLogger(RepliesController.class);
-	
+
 	@Autowired
 	private RepliesService repliesService;
-	
+
 	@ResponseBody
 	@GetMapping("/api/replies/{articleId}")
 	public SearchResultVO getRepliesList(@PathVariable String articleId) {
 		SearchResultVO searchResult = this.repliesService.findRepliesByArticleId(articleId);
 		return searchResult;
 	}
-	
+
 	@PreAuthorize(value = "isAuthenticated()")
 	@ResponseBody
 	@PostMapping("/api/replies-with-file")
@@ -52,27 +53,27 @@ public class RepliesController {
 			@Valid CreateVO createVO,
 			BindingResult bindingResult,
 			Authentication authentication) {
-		
+
 		if (bindingResult.hasErrors()) {
 			List<FieldError> errors = bindingResult.getFieldErrors();
 			throw new HelloSpringApiException("파라미터가 충분하지 않습니다.", HttpStatus.BAD_REQUEST.value(), errors);
 		}
-		MembersVO loginUser = (MembersVO) authentication.getPrincipal();
-		
+		MembersVO loginUser = AuthUtils.getPrincipal();
+
 		createVO.setEmail(loginUser.getEmail());
-		
+
 		logger.debug("reply: {}", createVO.getReply());
 		logger.debug("email: {}", createVO.getEmail());
 		logger.debug("articleId: {}", createVO.getArticleId());
 		logger.debug("parentReplyId: {}", createVO.getParentReplyId());
-		
+
 		RepliesVO createResult = this.repliesService.createNewReply(createVO);
-		
+
 		return createResult;
-		
+
 	}
-	
-	
+
+
 	// AJAX(API) 요청 / 반환.
 	// 요청 데이터 + 반환 데이터 ==> JSON
 	@PreAuthorize(value = "isAuthenticated()")
@@ -82,48 +83,48 @@ public class RepliesController {
 			@RequestBody @Valid CreateVO createVO,
 			BindingResult bindingResult,
 			Authentication authentication) {
-		
+
 		if (bindingResult.hasErrors()) {
 			List<FieldError> errors = bindingResult.getFieldErrors();
 			throw new HelloSpringApiException("파라미터가 충분하지 않습니다.", HttpStatus.BAD_REQUEST.value(), errors);
 		}
-		
-		MembersVO loginUser = (MembersVO) authentication.getPrincipal();
-		
+
+		MembersVO loginUser = AuthUtils.getPrincipal();
+
 		createVO.setEmail(loginUser.getEmail());
-		
+
 		logger.debug("reply: {}", createVO.getReply());
 		logger.debug("email: {}", createVO.getEmail());
 		logger.debug("articleId: {}", createVO.getArticleId());
 		logger.debug("parentReplyId: {}", createVO.getParentReplyId());
-		
+
 		RepliesVO createResult = this.repliesService.createNewReply(createVO);
-		
+
 		return createResult;
 	}
-	
+
 	@PreAuthorize(value = "isAuthenticated()")
 	@ResponseBody
 	@GetMapping("/api/replies/recommend/{replyId}")
 	public RecommendResultVO doRecommendReplyByReplyId(
 			@PathVariable String replyId) {
-		
+
 		RecommendResultVO recommendResult = this.repliesService.updateRecommendByReplyId(replyId);
-		
+
 		return recommendResult;
 	}
-	
+
 	@PreAuthorize(value = "isAuthenticated()")
 	@ResponseBody
 	@GetMapping("/api/replies/delete/{replyId}")
 	public DeleteResultVO doDeleteReplyByReplyId(
 			@PathVariable String replyId) {
-		
+
 		DeleteResultVO deleteResult = this.repliesService.deleteReplyByReplyId(replyId);
-		
+
 		return deleteResult;
 	}
-	
+
 	@PreAuthorize(value = "isAuthenticated()")
 	@ResponseBody
 	@PostMapping("/api/replies/{replyId}")
@@ -131,26 +132,26 @@ public class RepliesController {
 			@PathVariable String replyId,
 			@Valid UpdateVO updateVO,
 			BindingResult bindingResult) {
-		
+
 		if (bindingResult.hasErrors()) {
 			List<FieldError> errors = bindingResult.getFieldErrors();
 			throw new HelloSpringApiException(
-					"파라미터가 충분하지 않습니다.", 
-					HttpStatus.BAD_REQUEST.value(), 
+					"파라미터가 충분하지 않습니다.",
+					HttpStatus.BAD_REQUEST.value(),
 					errors);
 		}
-		
+
 		updateVO.setReplyId(replyId);
-		
+
 		UpdateResultVO updateResult = this.repliesService.updateReply(updateVO);
 		return updateResult;
 	}
-	
+
 	@PreAuthorize(value = "hasRole('RL-20260414-000001')")
 	@GetMapping("/reply/delete/all/{articleId}")
 	public String doDeleteAllByArticleIdAction(@PathVariable String articleId) {
 		boolean deleteResult = this.repliesService.deleteRepliesByArticleId(articleId);
 		return "redirect:/view/"+articleId;
 	}
-	
+
 }
