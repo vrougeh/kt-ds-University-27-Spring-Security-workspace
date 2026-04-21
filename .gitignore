@@ -31,3 +31,4 @@ replay_pid*
 node_modules/*
 
 **/application.yml
+kt-ds-University-27-spring-workspace/hello-spring/src/main/resources/application.yml
