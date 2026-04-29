@@ -144,11 +144,14 @@ public class HelloSpringConfiguration implements
 				CorsConfiguration config = new CorsConfiguration();
 
 				// 허용할 타사이트의 URL에서 요청하는 모든 접근(API)들을 허용하겠다.
-				config.addAllowedOrigin("http://192.168.211.20:8080");
+				config.addAllowedOrigin("http://192.168.211.28:3000");
+				config.addAllowedOrigin("http://localhost:3000");
 				// 허용할 타사이트의 요청 Method
 				// http://192.168.211.20:8080 에서 POST로 요청되는 접근들만 허용
 				config.addAllowedMethod("POST");
 				config.addAllowedMethod("GET");
+				config.addAllowedMethod("PUT");
+				config.addAllowedMethod("DELETE");
 				// 허용할 타 사이트의 요청 HttpHeader
 				// 모든 요청 HttpHeader를 허용하겠다
 				config.addAllowedHeader("*");

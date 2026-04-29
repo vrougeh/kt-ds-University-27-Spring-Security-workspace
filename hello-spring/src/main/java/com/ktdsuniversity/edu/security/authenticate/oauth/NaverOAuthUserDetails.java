@@ -22,7 +22,7 @@ public class NaverOAuthUserDetails extends SecurityUser implements OAuth2User{
 		membersVO.setEmail(this.oAuthResult.get("email").toString());
 		membersVO.setName(this.oAuthResult.get("name").toString());
 		List<String> userRoles = new ArrayList<>();
-		userRoles.add("RL-20260414-000003");
+		userRoles.add("RL-20260414-000003"); //TODO ROLE 관련 쿼리 작성 필요
 		membersVO.setRoles(userRoles);
 	}
 
