@@ -49,7 +49,7 @@ public class BoardApiController {
 		SearchResultVO searchResult = this.boardService.findAllBoard(searchListVO);
 		Map<String,Object> jsonResult = new HashMap<>();
 		jsonResult.put("result", searchResult);
-		jsonResult.put("pagenation", searchListVO);
+		jsonResult.put("pagination", searchListVO);
 		return jsonResult;
 	}
 
